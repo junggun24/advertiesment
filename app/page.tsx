@@ -12,11 +12,13 @@ const products = [
 export default function Home() {
   const [menu, setMenu] = useState(false);
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
   return <main>
     <header>
       <a className="brand" href="#top"><b>OIC</b><span>KOREA</span></a>
       <nav className={menu ? 'open' : ''}>
-        <a href="#products">제품</a><a href="#cases">설치사례</a><a href="#process">진행과정</a><a className="nav-cta" href="#inquiry">견적 문의</a>
+        <a href="/products">제품</a><a href="/cases">설치사례</a><a href="#process">진행과정</a><a className="nav-cta" href="#inquiry">견적 문의</a>
       </nav>
       <button className="menu" onClick={() => setMenu(!menu)} aria-label="메뉴">{menu ? <X/> : <Menu/>}</button>
     </header>
@@ -43,7 +45,7 @@ export default function Home() {
 
     <section className="section" id="products">
       <div className="heading"><div><p className="eyebrow"><i/>PRODUCT LINEUP</p><h2>목적에 맞는<br/>디스플레이를 찾으세요.</h2></div><p>설치 장소와 사용 목적을 알려주시면 담당자가 알맞은 제품과 예상 범위를 안내합니다.</p></div>
-      <div className="products">{products.map((p,i)=><article key={p[0]}><Monitor/><small>0{i+1}</small><h3>{p[0]}</h3><p>{p[1]}</p><span>{p[2]}</span><a href="#inquiry">상담 요청 <ArrowRight/></a></article>)}</div>
+      <div className="products">{products.map((p,i)=><article key={p[0]}><Monitor/><small>0{i+1}</small><h3>{p[0]}</h3><p>{p[1]}</p><span>{p[2]}</span><a href={['/products/information-led-board','/products/video-wall','/products/outdoor-kiosk'][i]}>상세 정보 <ArrowRight/></a></article>)}</div>
     </section>
 
     <section className="process" id="process">
@@ -53,19 +55,20 @@ export default function Home() {
 
     <section className="section" id="cases">
       <div className="heading"><div><p className="eyebrow"><i/>INSTALLATION CASES</p><h2>공간이 달라도<br/>해답은 분명합니다.</h2></div></div>
-      <div className="cases">{[['공공청사','시정 홍보 전자게시판'],['안전 현장','안전보건 안내전광판'],['문화시설','행사·시설 안내 멀티비전']].map((v,i)=><article key={v[0]}><div><Building2/><small>CASE 0{i+1}</small></div><p><MapPin/>{v[0]}</p><h3>{v[1]}</h3></article>)}</div>
+      <div className="cases">{[['공공청사','시정 홍보 전자게시판'],['안전 현장','안전보건 안내전광판'],['문화시설','행사·시설 안내 멀티비전']].map((v,i)=><article key={v[0]}><div><Building2/><small>CASE 0{i+1}</small></div><p><MapPin/>{v[0]}</p><h3>{v[1]}</h3><a href={['/cases/public-office-board','/cases/safety-information-board','/cases/culture-video-wall'][i]}>구성 보기 →</a></article>)}</div>
       <p className="note">※ 실제 설치 사진과 상세 정보는 자료 정리 후 순차적으로 업데이트됩니다.</p>
     </section>
 
     <section className="inquiry" id="inquiry">
       <div><p className="eyebrow light"><i/>PROJECT INQUIRY</p><h2>설치할 공간이 있다면,<br/>지금 이야기해 주세요.</h2><p>정확한 제품명을 몰라도 됩니다. 담당자가 내용을 확인하고 필요한 정보를 함께 정리합니다.</p><aside><span>상담 시 준비하면 좋은 정보</span><b>설치 장소 · 사용 목적 · 대략적인 크기 · 예산</b></aside></div>
-      <form onSubmit={e=>{e.preventDefault();setSent(true)}}>
+      <form onSubmit={async e=>{e.preventDefault();setSending(true);setError('');const form=new FormData(e.currentTarget);try{const response=await fetch('/api/inquiries',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.fromEntries(form))});const data=await response.json() as {message?:string};if(!response.ok)throw new Error(data.message||'문의 접수에 실패했습니다.');setSent(true)}catch(err){setError(err instanceof Error?err.message:'문의 접수에 실패했습니다.')}finally{setSending(false)}}}>
         {sent ? <div className="success"><CheckCircle2/><h3>문의 내용이 준비되었습니다.</h3><p>실제 접수 연결은 다음 개발 단계에서 연동됩니다.</p><button type="button" onClick={()=>setSent(false)}>다시 작성</button></div> : <>
-          <div className="row"><label>이름<input required placeholder="담당자 성함"/></label><label>기관·회사명<input required placeholder="기관 또는 회사명"/></label></div>
-          <label>연락처<input required type="tel" placeholder="010-0000-0000"/></label>
-          <label>문의 내용<textarea required rows={4} placeholder="설치 장소와 사용 목적을 간단히 적어주세요."/></label>
+          <div className="row"><label>이름<input name="name" required maxLength={40} placeholder="담당자 성함"/></label><label>기관·회사명<input name="organization" required maxLength={100} placeholder="기관 또는 회사명"/></label></div>
+          <label>연락처<input name="contact" required maxLength={40} type="tel" placeholder="010-0000-0000"/></label>
+          <label>문의 내용<textarea name="message" required maxLength={2000} rows={4} placeholder="설치 장소와 사용 목적을 간단히 적어주세요."/></label>
           <label className="consent"><input required type="checkbox"/> 개인정보 수집 및 이용에 동의합니다.</label>
-          <button className="submit" type="submit">견적 문의 보내기 <ArrowRight/></button>
+          {error&&<p className="form-error" role="alert">{error}</p>}
+          <button className="submit" disabled={sending} type="submit">{sending?'접수 중...':'견적 문의 보내기'} <ArrowRight/></button>
         </>}
       </form>
     </section>
