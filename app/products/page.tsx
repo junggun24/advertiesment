@@ -14,7 +14,7 @@ export default function ProductsPage(){
       <label><Search/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="제품명 또는 사용 목적 검색"/></label>
       <div>{['전체','전광판','영상정보디스플레이장치'].map(c=><button className={category===c?'active':''} onClick={()=>setCategory(c)} key={c}>{c}</button>)}</div>
     </section>
-    <section className="catalog-list">{filtered.map((p,i)=><article key={p.slug}><small>0{i+1} · {p.category}</small><h2>{p.name}</h2><p>{p.summary}</p><div>{p.uses.map(v=><span key={v}>{v}</span>)}</div><a href={`/products/${p.slug}`}>상세 정보 <ArrowRight/></a></article>)}</section>
+    <section className="catalog-list">{filtered.map((p,i)=><article key={p.slug}><img className="catalog-image" src={p.image} alt={`${p.name} 제품 이미지`}/><small>0{i+1} · {p.category}</small><h2>{p.name}</h2><p>{p.summary}</p><div>{p.uses.map(v=><span key={v}>{v}</span>)}</div><a href={`/products/${p.slug}`}>상세 정보 <ArrowRight/></a></article>)}</section>
     {!filtered.length&&<p className="empty">검색 결과가 없습니다. 다른 검색어를 입력해 주세요.</p>}
   </main>
 }
