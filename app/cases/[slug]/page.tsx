@@ -8,7 +8,7 @@ export async function generateMetadata({params}:{params:Promise<{slug:string}>})
 export default async function CaseDetail({params}:{params:Promise<{slug:string}>}){
   const {slug}=await params; const item=getCase(slug); if(!item) notFound(); const product=getProduct(item.productSlug);
   return <main className="detail-page">
-    <div className="subnav"><a href="/cases">← 설치사례 목록</a><a href="/#inquiry">견적 문의</a></div>
+    <div className="subnav"><a href="/cases">← 설치사례 목록</a><a href="/inquiry">견적 문의</a></div>
     <section className="detail-hero has-image"><div><small><MapPin/> {item.place}</small><h1>{item.title}</h1><p>{item.summary}</p><span>{item.status}</span></div><img src={item.image} alt={`${item.title} 설치 구성 예시`}/></section>
     <section className="case-detail"><div><small>설치 목적</small><strong>{item.purpose}</strong></div><div><small>연결 제품</small><strong>{product?.name}</strong></div><div><small>상세 자료</small><strong>검토 후 업데이트</strong></div></section>
     {product&&<section className="related"><h2>이 구성에 사용되는 제품</h2><div><a href={`/products/${product.slug}`}><span>{product.category}</span><b>{product.name}</b><ArrowRight/></a></div></section>}

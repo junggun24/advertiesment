@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './refinements.css';
+import { SiteHeader } from '@/components/site-header';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://oic-korea-display.changsoft101.chatgpt.site'),
@@ -19,5 +21,5 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       {'@type':'WebSite','@id':'https://oic-korea-display.changsoft101.chatgpt.site/#website',url:'https://oic-korea-display.changsoft101.chatgpt.site/',name:'오아이씨코리아',publisher:{'@id':'https://oic-korea-display.changsoft101.chatgpt.site/#organization'},potentialAction:{'@type':'SearchAction',target:'https://oic-korea-display.changsoft101.chatgpt.site/info?q={search_term_string}','query-input':'required name=search_term_string'}}
     ]
   };
-  return <html lang="ko"><body>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}} /></body></html>;
+  return <html lang="ko"><body><SiteHeader/>{children}<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}} /></body></html>;
 }
