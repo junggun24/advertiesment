@@ -3,6 +3,16 @@
   grid-template-columns: 220px 1fr;
   gap: 16px;
   align-items: center;
+  padding: 12px;
+  border: 2px dashed transparent;
+  border-radius: 10px;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease;
+}
+.image-upload-row.is-dragging {
+  border-color: #2f5fb3;
+  background: #eef5ff;
 }
 .image-upload-row > img {
   width: 220px;

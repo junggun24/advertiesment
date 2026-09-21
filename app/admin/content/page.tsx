@@ -619,10 +619,15 @@ function ImageField({
   fallback?: string;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [message, setMessage] = useState('');
   const preview = value || fallback;
   async function upload(file?: File) {
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setMessage('JPG, PNG, WEBP, GIF 이미지 파일만 넣을 수 있습니다.');
+      return;
+    }
     setUploading(true);
     setMessage('업로드용 이미지 최적화 중...');
     try {
@@ -650,7 +655,30 @@ function ImageField({
   return (
     <div className="wide image-upload-field">
       <b>{label}</b>
-      <div className="image-upload-row">
+      <div
+        className={`image-upload-row${dragging ? ' is-dragging' : ''}`}
+        onDragEnter={(event) => {
+          if (event.dataTransfer.types.includes('Files')) setDragging(true);
+        }}
+        onDragOver={(event) => {
+          if (!event.dataTransfer.types.includes('Files')) return;
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'copy';
+          setDragging(true);
+        }}
+        onDragLeave={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+            setDragging(false);
+        }}
+        onDrop={(event) => {
+          if (!event.dataTransfer.files.length) return;
+          event.preventDefault();
+          setDragging(false);
+          if (event.dataTransfer.files.length > 1)
+            setMessage('이 영역에는 첫 번째 이미지 1개만 적용됩니다.');
+          void upload(event.dataTransfer.files[0]);
+        }}
+      >
         {preview ? (
           <Image
             unoptimized
@@ -676,7 +704,10 @@ function ImageField({
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"
               disabled={uploading}
-              onChange={(event) => void upload(event.target.files?.[0])}
+              onChange={(event) => {
+                void upload(event.target.files?.[0]);
+                event.target.value = '';
+              }}
             />
           </label>
           {value && (
@@ -691,6 +722,7 @@ function ImageField({
                 ? '본문 첫 이미지 자동 사용 중'
                 : '이미지는 선택사항입니다.'}
           </small>
+          <small>이미지를 이 영역으로 끌어다 놓아도 업로드됩니다.</small>
           {message && <small>{message}</small>}
         </span>
       </div>

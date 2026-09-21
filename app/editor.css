@@ -55,12 +55,33 @@
   display: none;
 }
 .rich-editor-area {
+  position: relative;
   min-height: 320px;
   padding: 24px;
   outline: none;
   font-size: 16px;
   line-height: 1.8;
   color: #263244;
+  transition:
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+.rich-editor-area.is-dragging {
+  background: #eef5ff;
+  box-shadow: inset 0 0 0 3px #2f5fb3;
+}
+.rich-editor-area.is-dragging:after {
+  content: '이미지를 놓으면 이 위치에 삽입됩니다';
+  position: sticky;
+  inset: 16px auto auto 16px;
+  display: inline-block;
+  padding: 9px 12px;
+  border-radius: 7px;
+  background: #172b55;
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  pointer-events: none;
 }
 .rich-editor-area:empty:before {
   content: attr(data-placeholder);
