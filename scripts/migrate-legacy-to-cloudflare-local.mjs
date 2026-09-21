@@ -60,7 +60,7 @@ for (const asset of assets) {
       'r2',
       'object',
       'put',
-      `oic-korea-local-files/${asset.object_key}`,
+      `ad-bucket/${asset.object_key}`,
       '--local',
       '--config',
       'wrangler.jsonc',

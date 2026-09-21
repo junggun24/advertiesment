@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "db:init": "wrangler d1 migrations apply oic-korea-local --local --config wrangler.jsonc",
+    "db:init": "wrangler d1 migrations apply oic-korea-db --local --config wrangler.jsonc",
     "db:legacy:init": "node scripts/init-db.mjs",
     "db:migrate:legacy-local": "node scripts/migrate-legacy-to-cloudflare-local.mjs",
     "db:migrate:legacy-remote": "node scripts/migrate-legacy-to-cloudflare-remote.mjs",
