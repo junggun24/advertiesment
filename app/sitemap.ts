@@ -2,9 +2,10 @@ import type { MetadataRoute } from 'next';
 import { cases, products } from '@/lib/catalog';
 import { getContentRecords } from '@/lib/content-data';
 import type { CaseStudy, Product } from '@/lib/catalog';
+import { PUBLIC_SITE_URL } from '@/lib/content-types';
 
 export default async function sitemap():Promise<MetadataRoute.Sitemap> {
-  const base='https://oic-korea-display.changsoft101.chatgpt.site';
+  const base=PUBLIC_SITE_URL;
   const [productRecords,caseRecords]=await Promise.all([getContentRecords<Product>('product'),getContentRecords<CaseStudy>('case')]);
   const productMap=new Map(products.map(product=>[product.slug,{slug:product.slug,updatedAt:undefined as string|undefined}]));
   const caseMap=new Map(cases.map(item=>[item.slug,{slug:item.slug,updatedAt:undefined as string|undefined}]));

@@ -7,15 +7,15 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "oic-korea-local",
-      "database_id": "00000000-0000-4000-8000-000000000000",
+      "database_name": "oic-korea-db",
+      "database_id": "0b3b5268-270c-42ad-b660-ddaf70e42b18",
       "migrations_dir": "drizzle"
     }
   ],
   "r2_buckets": [
     {
       "binding": "FILES",
-      "bucket_name": "oic-korea-local-files"
+      "bucket_name": "ad-bucket"
     }
   ],
   "observability": { "enabled": true }

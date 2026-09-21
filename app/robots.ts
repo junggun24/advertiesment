@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { PUBLIC_SITE_URL } from '@/lib/content-types';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent:'*', allow:'/', disallow:['/api/'] },
       { userAgent:'OAI-SearchBot', allow:'/', disallow:['/api/'] },
     ],
-    sitemap: 'https://oic-korea-display.changsoft101.chatgpt.site/sitemap.xml',
+    sitemap: `${PUBLIC_SITE_URL}/sitemap.xml`,
   };
 }

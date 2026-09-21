@@ -8,7 +8,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import './design-refresh.css';
 import { getContentItems } from '@/lib/content-data';
-import { defaultSeoSettings, type SeoSettings } from '@/lib/content-types';
+import { defaultSeoSettings, PUBLIC_SITE_URL, type SeoSettings } from '@/lib/content-types';
 import { AttributionTracker } from '@/components/attribution-tracker';
 
 export async function generateMetadata():Promise<Metadata>{const [saved]=await getContentItems<SeoSettings>('seo');const seo={...defaultSeoSettings,...saved};return {
@@ -25,8 +25,8 @@ export async function generateMetadata():Promise<Metadata>{const [saved]=await g
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const schema = {
     '@context':'https://schema.org', '@graph':[
-      {'@type':'Organization','@id':'https://oic-korea-display.changsoft101.chatgpt.site/#organization',name:'주식회사 오아이씨코리아',url:'https://oic-korea-display.changsoft101.chatgpt.site/',logo:'https://oic-korea-display.changsoft101.chatgpt.site/oic/logo.png',telephone:'+82-32-719-7947',email:'sales@oickorea.com',address:{'@type':'PostalAddress',streetAddress:'안남로 369번길 12, 5층',addressLocality:'부평구',addressRegion:'인천광역시',addressCountry:'KR'}},
-      {'@type':'WebSite','@id':'https://oic-korea-display.changsoft101.chatgpt.site/#website',url:'https://oic-korea-display.changsoft101.chatgpt.site/',name:'오아이씨코리아',publisher:{'@id':'https://oic-korea-display.changsoft101.chatgpt.site/#organization'},potentialAction:{'@type':'SearchAction',target:'https://oic-korea-display.changsoft101.chatgpt.site/info?q={search_term_string}','query-input':'required name=search_term_string'}}
+      {'@type':'Organization','@id':`${PUBLIC_SITE_URL}/#organization`,name:'주식회사 오아이씨코리아',url:`${PUBLIC_SITE_URL}/`,logo:`${PUBLIC_SITE_URL}/oic/logo.png`,telephone:'+82-32-719-7947',email:'sales@oickorea.com',address:{'@type':'PostalAddress',streetAddress:'안남로 369번길 12, 5층',addressLocality:'부평구',addressRegion:'인천광역시',addressCountry:'KR'}},
+      {'@type':'WebSite','@id':`${PUBLIC_SITE_URL}/#website`,url:`${PUBLIC_SITE_URL}/`,name:'오아이씨코리아',publisher:{'@id':`${PUBLIC_SITE_URL}/#organization`},potentialAction:{'@type':'SearchAction',target:`${PUBLIC_SITE_URL}/info?q={search_term_string}`,'query-input':'required name=search_term_string'}}
     ]
   };
   return <html lang="ko"><body><AttributionTracker/><SiteHeader/>{children}<SiteFooter/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}} /></body></html>;
