@@ -8,10 +8,3 @@ void test('removes executable markup and editor-specific attributes', () => {
   );
   assert.equal(value, '<p>안내</p><img src="/safe.jpg" alt="현장" />');
 });
-
-void test('moves legacy uploaded images to the current relative endpoint', () => {
-  const value = sanitizeEditorHtml(
-    '<img src="http://domob.ddns.net:8080/api/uploads/uploads/a.png" alt="현장">',
-  );
-  assert.match(value, /src="\/api\/uploads\/uploads\/a\.png"/);
-});

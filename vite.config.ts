@@ -28,11 +28,8 @@ export default defineConfig(async ({ command, mode }) => {
   return {
     css: { postcss: { plugins: [tailwindcss()] } },
     server: {
-      // Listen on the LAN interface so the site is reachable through the
-      // router's port-forwarding rule, not only from this Mac.
+      // Keep local development reachable from other devices on the same LAN.
       host: '0.0.0.0',
-      // Allow requests forwarded from the configured public DDNS hostname.
-      allowedHosts: ['domob.ddns.net'],
       ...(isCodexSeatbeltSandbox
         ? { watch: { useFsEvents: false, usePolling: true } }
         : {}),

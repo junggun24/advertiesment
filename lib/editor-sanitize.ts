@@ -1,10 +1,7 @@
 import sanitizeHtml from 'sanitize-html';
 
-const oldUploadOrigin = /https?:\/\/domob\.ddns\.net:8080\/api\/uploads\//gi;
-
 export function sanitizeEditorHtml(value: string) {
-  const normalized = value.replace(oldUploadOrigin, '/api/uploads/');
-  return sanitizeHtml(normalized, {
+  return sanitizeHtml(value, {
     allowedTags: [
       'p',
       'br',

@@ -5,7 +5,6 @@
 ## 도메인과 색인
 
 - [x] 최종 운영 도메인에 HTTPS 적용
-- [ ] HTTP, DDNS, 기존 Sites 주소를 최종 도메인으로 301 이동
 - [x] `metadataBase`, canonical, Open Graph URL을 최종 도메인으로 통일
 - [x] `robots.txt`, `sitemap.xml`, Organization·WebSite 구조화 데이터 주소 통일
 - [ ] Google Search Console 소유권 확인 및 사이트맵 제출
@@ -29,7 +28,7 @@
 - [ ] 실제 제품 규격, 설치 실적, 작성자·검수자·근거 출처 보강
 - [x] 제품 상세 페이지와 조달 모델 규격·가격 데이터 자동 연결
 - [x] 관리자에 조달번호 중복, 규격·출처 누락, 본문 이미지 설명 누락 경고 추가
-- [x] 기존 DDNS 본문 이미지 주소를 R2 상대 주소로 이전
+- [x] 기존 절대 주소 본문 이미지를 R2 상대 주소로 이전
 - [ ] Google Business Profile, 네이버 지도, 카카오맵, 나라장터 등 회사명·주소·전화번호 통일
 - [ ] 월 1회 색인 제외 페이지, 깨진 링크, 검색어와 AI 검색 유입 검토
 
@@ -44,4 +43,3 @@
 - Google Search Console: 소유권 인증 계정과 사이트맵 제출 권한 필요
 - Bing Webmaster Tools·네이버 서치어드바이저: 각 서비스 로그인과 사이트 소유권 인증 필요
 - GA4·광고 전환: 측정 ID, 전환 ID·라벨, 픽셀 ID 또는 API 토큰 필요
-- 301 이동: `domob.ddns.net`을 제공하는 기존 서버나 공유기 설정 권한 필요
