@@ -179,6 +179,16 @@ export default function InquiryAdmin() {
     }
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
   }, [dated]);
+  const aiSearchStats = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of dated) {
+      const value = `${item.source_name} ${item.last_source_name}`.toLowerCase();
+      const label = /chatgpt|openai/.test(value) ? 'ChatGPT' : /perplexity/.test(value) ? 'Perplexity' : /gemini|bard/.test(value) ? 'Gemini' : '';
+      if (label) counts.set(label, (counts.get(label) || 0) + 1);
+    }
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+  }, [dated]);
+  const aiSearchCount = aiSearchStats.reduce((sum, [, count]) => sum + count, 0);
   const actionStats = useMemo(() => {
     const labels: Record<string, string> = {
       phone_click: '전화 클릭',
@@ -312,8 +322,8 @@ export default function InquiryAdmin() {
           <small>조회 조건 내 문의</small>
           <strong>{dated.length}</strong>
           <span>
-            표시 중 {visible.length}건 · 재방문 {repeatCount}건 · 점검 필요{' '}
-            {warningCount}건
+            표시 중 {visible.length}건 · 재방문 {repeatCount}건 · AI 검색{' '}
+            {aiSearchCount}건 · 점검 필요 {warningCount}건
           </span>
         </div>
         <div className="source-chart">
@@ -365,6 +375,19 @@ export default function InquiryAdmin() {
             ))
           ) : (
             <small>새 문의부터 자동 집계됩니다.</small>
+          )}
+        </div>
+        <div>
+          <h2>AI 검색 유입</h2>
+          {aiSearchStats.length ? (
+            aiSearchStats.map(([label, count]) => (
+              <p key={label}>
+                <span>{label}</span>
+                <b>{count}건</b>
+              </p>
+            ))
+          ) : (
+            <small>ChatGPT·Perplexity·Gemini 유입 문의가 아직 없습니다.</small>
           )}
         </div>
       </section>

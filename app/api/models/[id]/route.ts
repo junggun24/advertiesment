@@ -1,6 +1,7 @@
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { cloudflareEnv } from '@/lib/cloudflare-env';
 import { displayModelFields, displayModelValues, normalizeDisplayModel } from '@/lib/display-models';
+import { notifyIndexNow } from '@/lib/indexnow';
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!await isAdminAuthenticated(request)) return Response.json({ message: '관리자 로그인이 필요합니다.' }, { status: 401 });
@@ -15,6 +16,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (!result.meta.changes) return Response.json({ message: '제품 사양을 찾지 못했습니다.' }, { status: 404 });
     const row = await cloudflareEnv().DB.prepare('SELECT * FROM display_models WHERE id=?')
       .bind(id).first<Record<string, unknown>>();
+    await notifyIndexNow(['/simulator']);
     return Response.json(normalizeDisplayModel(row ?? {}));
   } catch (error) {
     const message = error instanceof Error && error.message.includes('UNIQUE') ? '이미 등록된 모델명입니다.' : error instanceof Error ? error.message : '제품 사양을 수정하지 못했습니다.';
@@ -28,5 +30,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   if (!Number.isInteger(id)) return Response.json({ message: '제품 번호가 올바르지 않습니다.' }, { status: 400 });
   const result = await cloudflareEnv().DB.prepare('DELETE FROM display_models WHERE id=?').bind(id).run();
   if (!result.meta.changes) return Response.json({ message: '제품 사양을 찾지 못했습니다.' }, { status: 404 });
+  await notifyIndexNow(['/simulator']);
   return Response.json({ ok: true });
 }

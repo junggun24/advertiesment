@@ -9,6 +9,7 @@ export type OicCloudflareEnv = {
   TURNSTILE_SITE_KEY?: string;
   TURNSTILE_SECRET_KEY?: string;
   TURNSTILE_ALLOWED_HOSTNAMES?: string;
+  INDEXNOW_KEY?: string;
 };
 
 export function cloudflareEnv() {

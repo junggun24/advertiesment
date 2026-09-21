@@ -36,5 +36,17 @@ results.models = await check('/api/models', async (response) => {
     throw new Error('공개 제품 사양 데이터가 없습니다.');
   }
 });
+results.llms = await check('/llms.txt', async (response) => {
+  const text = await response.text();
+  if (!text.includes('오아이씨코리아') || !text.includes('/products')) {
+    throw new Error('llms.txt 내용이 올바르지 않습니다.');
+  }
+});
+results.indexNowKey = await check('/indexnow-key.txt', async (response) => {
+  const key = (await response.text()).trim();
+  if (!/^[A-Za-z0-9-]{8,128}$/.test(key)) {
+    throw new Error('IndexNow 키 파일이 올바르지 않습니다.');
+  }
+});
 
 console.log(JSON.stringify({ ok: true, origin, results }));

@@ -1,6 +1,7 @@
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { cloudflareEnv } from '@/lib/cloudflare-env';
 import { displayModelFields, displayModelValues, normalizeDisplayModel } from '@/lib/display-models';
+import { notifyIndexNow } from '@/lib/indexnow';
 
 export async function GET(request: Request) {
   try {
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
       .run();
     const row = await cloudflareEnv().DB.prepare('SELECT * FROM display_models WHERE id=?')
       .bind(result.meta.last_row_id).first<Record<string, unknown>>();
+    await notifyIndexNow(['/simulator']);
     return Response.json(normalizeDisplayModel(row ?? {}), { status: 201 });
   } catch (error) {
     const message = error instanceof Error && error.message.includes('UNIQUE') ? '이미 등록된 모델명입니다.' : error instanceof Error ? error.message : '제품 사양을 저장하지 못했습니다.';

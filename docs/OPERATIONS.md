@@ -12,6 +12,7 @@
 2. Turnstile 위젯에 `display.dsko.workers.dev`와 추후 연결할 운영 도메인을 등록한다.
 3. 사이트 키는 Worker 변수 `TURNSTILE_SITE_KEY`, 비밀키는 Worker secret `TURNSTILE_SECRET_KEY`로 등록한다.
 4. 운영 도메인을 연결하면 `TURNSTILE_ALLOWED_HOSTNAMES`도 쉼표로 구분해 갱신한다.
+5. `INDEXNOW_KEY`는 Worker secret으로 유지한다. 콘텐츠와 제품 사양을 변경하면 IndexNow 알림이 자동 전송된다.
 
 ## 보안
 
@@ -23,7 +24,7 @@
 ## 모니터링
 
 - `GET /api/health`는 D1과 R2 연결 상태를 검사한다.
-- GitHub Actions `Monitor Production`이 매시 7분과 37분에 홈페이지, 상태 API, robots.txt, sitemap.xml, 관리자 로그인 화면을 확인한다.
+- GitHub Actions `Monitor Production`이 매시 7분과 37분에 홈페이지, 상태 API, robots.txt, sitemap.xml, 관리자 로그인, 제품 API, `llms.txt`, IndexNow 키 파일을 확인한다.
 - 실패 시 GitHub Actions 실패 알림과 Cloudflare Worker 관찰 로그를 확인한다.
 - 로그 이벤트는 JSON으로 기록하며 고객 이름, 연락처, 문의 내용은 기록하지 않는다.
 
