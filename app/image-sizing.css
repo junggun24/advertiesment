@@ -1,5 +1,37 @@
-.rich-editor-area img{display:block;width:auto;max-width:100%;height:auto;margin:24px auto;border-radius:8px;background:#f5f7fa}
-.editor-content img{display:block;width:auto;max-width:100%;height:auto;margin:34px auto;border-radius:12px;background:#f5f7fa}
-.image-upload-row>img{width:220px;aspect-ratio:16/10;object-fit:contain;background:#f5f7fa}
-.catalog-image,.showcase-image img,.detail-hero.has-image>img{width:100%;object-fit:contain;object-position:center;background:#f5f7fa}
-@media(max-width:700px){.image-upload-row>img{width:100%}}
+.rich-editor-area img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 24px auto;
+  border-radius: 8px;
+  background: #f5f7fa;
+}
+.editor-content img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  margin: 34px auto;
+  border-radius: 12px;
+  background: #f5f7fa;
+}
+.image-upload-row > img {
+  width: 220px;
+  aspect-ratio: 16/10;
+  object-fit: contain;
+  background: #f5f7fa;
+}
+.catalog-image,
+.showcase-image img,
+.detail-hero.has-image > img {
+  width: 100%;
+  object-fit: contain;
+  object-position: center;
+  background: #f5f7fa;
+}
+@media (max-width: 700px) {
+  .image-upload-row > img {
+    width: 100%;
+  }
+}

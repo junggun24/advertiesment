@@ -13,7 +13,11 @@ export async function GET() {
   }
   const healthy = checks.database && checks.storage;
   return Response.json(
-    { status: healthy ? 'ok' : 'degraded', checks, timestamp: new Date().toISOString() },
+    {
+      status: healthy ? 'ok' : 'degraded',
+      checks,
+      timestamp: new Date().toISOString(),
+    },
     { status: healthy ? 200 : 503, headers: { 'cache-control': 'no-store' } },
   );
 }

@@ -2,6 +2,7 @@
 
 ## 배포
 
+- 로컬과 CI는 Node.js 24를 사용한다. 저장소의 `.nvmrc`와 `.node-version`을 기준으로 버전을 맞춘다.
 - `main` 브랜치에 반영되면 GitHub Actions가 린트, 빌드, D1 마이그레이션, Worker 배포와 운영 점검을 순서대로 실행한다.
 - GitHub 저장소에는 `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` 두 Actions secret이 필요하다.
 - 관리자 계정 및 Turnstile 비밀키는 Worker secret으로만 관리하며 저장소에 넣지 않는다.
@@ -13,6 +14,8 @@
 3. 사이트 키는 Worker 변수 `TURNSTILE_SITE_KEY`, 비밀키는 Worker secret `TURNSTILE_SECRET_KEY`로 등록한다.
 4. 운영 도메인을 연결하면 `TURNSTILE_ALLOWED_HOSTNAMES`도 쉼표로 구분해 갱신한다.
 5. `INDEXNOW_KEY`는 Worker secret으로 유지한다. 콘텐츠와 제품 사양을 변경하면 IndexNow 알림이 자동 전송된다.
+
+Turnstile 위젯 자동 발급에는 Cloudflare API 토큰의 `challenge-widgets.write` 권한이 필요하다. 권한이 없는 경우 대시보드에서 위젯을 만든 뒤 세 Worker secret을 등록한다.
 
 ## 보안
 

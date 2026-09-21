@@ -3,29 +3,207 @@
 // A rich-text editing surface must use contentEditable rather than a textarea.
 // oxlint-disable typescript/no-deprecated, jsx-a11y/no-noninteractive-tabindex, jsx-a11y/no-static-element-interactions
 import { useEffect, useRef, useState } from 'react';
-import { Bold, Heading2, ImageUp, Italic, Link, List, ListOrdered } from 'lucide-react';
+import {
+  Bold,
+  Heading2,
+  ImageUp,
+  Italic,
+  Link,
+  List,
+  ListOrdered,
+} from 'lucide-react';
 import { optimizeImageForUpload } from '@/lib/client-image';
 
-export function RichTextEditor({value,onChange}:{value:string;onChange:(value:string)=>void}){
-  const editor=useRef<HTMLDivElement>(null);
-  const savedRange=useRef<Range|null>(null);
-  const [uploading,setUploading]=useState(false);
-  const [message,setMessage]=useState('');
-  useEffect(()=>{if(editor.current&&editor.current.innerHTML!==value)editor.current.innerHTML=value||'<p><br></p>'},[value]);
-  function rememberSelection(){const selection=getSelection();if(selection?.rangeCount&&editor.current?.contains(selection.anchorNode))savedRange.current=selection.getRangeAt(0).cloneRange()}
-  function command(name:string,argument?:string){editor.current?.focus();if(savedRange.current){const selection=getSelection();selection?.removeAllRanges();selection?.addRange(savedRange.current)}document.execCommand(name,false,argument);rememberSelection()}
-  async function addLink(){const url=prompt('연결할 주소를 입력해 주세요.','https://');if(url&&/^https?:\/\//i.test(url))command('createLink',url)}
-  async function upload(file?:File){
-    if(!file)return;
-    setUploading(true);setMessage('업로드용 이미지 최적화 중...');
-    try{
-      const optimized=await optimizeImageForUpload(file);
-      const form=new FormData();form.set('file',optimized);
-      const response=await fetch('/api/uploads',{method:'POST',body:form});
-      const result=await response.json() as {url?:string;message?:string};
-      if(!response.ok||!result.url){setMessage(result.message??'이미지를 업로드하지 못했습니다.');return}
-      command('insertImage',result.url);onChange(editor.current?.innerHTML??'');setMessage('이미지가 본문에 삽입되었습니다.');
-    }catch{setMessage('파일 저장소에 연결할 수 없습니다.')}finally{setUploading(false)}
+export function RichTextEditor({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const editor = useRef<HTMLDivElement>(null);
+  const savedRange = useRef<Range | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState('');
+  useEffect(() => {
+    if (editor.current && editor.current.innerHTML !== value)
+      editor.current.innerHTML = value || '<p><br></p>';
+  }, [value]);
+  function rememberSelection() {
+    const selection = getSelection();
+    if (selection?.rangeCount && editor.current?.contains(selection.anchorNode))
+      savedRange.current = selection.getRangeAt(0).cloneRange();
   }
-  return <div className="rich-editor"><div className="rich-toolbar" aria-label="본문 서식"><button type="button" title="굵게" onMouseDown={event=>{event.preventDefault();command('bold')}}><Bold/></button><button type="button" title="기울임" onMouseDown={event=>{event.preventDefault();command('italic')}}><Italic/></button><button type="button" title="제목" onMouseDown={event=>{event.preventDefault();command('formatBlock','h2')}}><Heading2/></button><button type="button" title="글머리 목록" onMouseDown={event=>{event.preventDefault();command('insertUnorderedList')}}><List/></button><button type="button" title="번호 목록" onMouseDown={event=>{event.preventDefault();command('insertOrderedList')}}><ListOrdered/></button><button type="button" title="링크" onMouseDown={event=>{event.preventDefault();void addLink()}}><Link/></button><label className={uploading?'disabled':''}><ImageUp/>{uploading?'업로드 중':'이미지 삽입'}<input aria-label="본문 이미지 선택" type="file" accept="image/jpeg,image/png,image/webp,image/gif" disabled={uploading} onMouseDown={rememberSelection} onChange={event=>void upload(event.target.files?.[0])}/></label></div><div ref={editor} className="rich-editor-area" aria-label="상세 본문" aria-multiline="true" tabIndex={0} contentEditable suppressContentEditableWarning data-placeholder="본문을 입력하세요. 이미지를 넣으면 첫 이미지가 자동 썸네일로 사용됩니다." onInput={event=>{rememberSelection();onChange(event.currentTarget.innerHTML)}} onKeyUp={rememberSelection} onMouseUp={rememberSelection}/>{message&&<small>{message}</small>}</div>;
+  function command(name: string, argument?: string) {
+    editor.current?.focus();
+    if (savedRange.current) {
+      const selection = getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(savedRange.current);
+    }
+    document.execCommand(name, false, argument);
+    rememberSelection();
+  }
+  async function addLink() {
+    const url = prompt('연결할 주소를 입력해 주세요.', 'https://');
+    if (url && /^https?:\/\//i.test(url)) command('createLink', url);
+  }
+  async function upload(file?: File) {
+    if (!file) return;
+    const suggested = file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
+    const alternative =
+      prompt(
+        '검색과 접근성을 위한 이미지 설명을 입력해 주세요.',
+        suggested,
+      )?.trim() ?? '';
+    setUploading(true);
+    setMessage('업로드용 이미지 최적화 중...');
+    try {
+      const optimized = await optimizeImageForUpload(file);
+      const form = new FormData();
+      form.set('file', optimized);
+      const response = await fetch('/api/uploads', {
+        method: 'POST',
+        body: form,
+      });
+      const result = (await response.json()) as {
+        url?: string;
+        message?: string;
+      };
+      if (!response.ok || !result.url) {
+        setMessage(result.message ?? '이미지를 업로드하지 못했습니다.');
+        return;
+      }
+      const escape = (input: string) =>
+        input.replace(
+          /[&<>"]/g,
+          (value) =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[
+              value
+            ] ?? value,
+        );
+      command(
+        'insertHTML',
+        `<img src="${escape(result.url)}" alt="${escape(alternative)}">`,
+      );
+      onChange(editor.current?.innerHTML ?? '');
+      setMessage(
+        alternative
+          ? '이미지와 대체 설명이 본문에 삽입되었습니다.'
+          : '이미지가 삽입되었습니다. 공개 전 대체 설명을 입력해 주세요.',
+      );
+    } catch {
+      setMessage('파일 저장소에 연결할 수 없습니다.');
+    } finally {
+      setUploading(false);
+    }
+  }
+  return (
+    <div className="rich-editor">
+      <div className="rich-toolbar" aria-label="본문 서식">
+        <button
+          type="button"
+          title="굵게"
+          onMouseDown={(event) => {
+            event.preventDefault();
+            command('bold');
+          }}
+        >
+          <Bold />
+        </button>
+        <button
+          type="button"
+          title="기울임"
+          onMouseDown={(event) => {
+            event.preventDefault();
+            command('italic');
+          }}
+        >
+          <Italic />
+        </button>
+        <button
+          type="button"
+          title="제목"
+          onMouseDown={(event) => {
+            event.preventDefault();
+            command('formatBlock', 'h2');
+          }}
+        >
+          <Heading2 />
+        </button>
+        <button
+          type="button"
+          title="글머리 목록"
+          onMouseDown={(event) => {
+            event.preventDefault();
+            command('insertUnorderedList');
+          }}
+        >
+          <List />
+        </button>
+        <button
+          type="button"
+          title="번호 목록"
+          onMouseDown={(event) => {
+            event.preventDefault();
+            command('insertOrderedList');
+          }}
+        >
+          <ListOrdered />
+        </button>
+        <button
+          type="button"
+          title="링크"
+          onMouseDown={(event) => {
+            event.preventDefault();
+            void addLink();
+          }}
+        >
+          <Link />
+        </button>
+        <label className={uploading ? 'disabled' : ''}>
+          <ImageUp />
+          {uploading ? '업로드 중' : '이미지 삽입'}
+          <input
+            aria-label="본문 이미지 선택"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            disabled={uploading}
+            onMouseDown={rememberSelection}
+            onChange={(event) => void upload(event.target.files?.[0])}
+          />
+        </label>
+      </div>
+      <div
+        ref={editor}
+        className="rich-editor-area"
+        aria-label="상세 본문"
+        aria-multiline="true"
+        tabIndex={0}
+        contentEditable
+        suppressContentEditableWarning
+        data-placeholder="본문을 입력하세요. 이미지를 넣으면 첫 이미지가 자동 썸네일로 사용됩니다."
+        onInput={(event) => {
+          rememberSelection();
+          onChange(event.currentTarget.innerHTML);
+        }}
+        onKeyUp={rememberSelection}
+        onMouseUp={rememberSelection}
+        onDoubleClick={(event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLImageElement)) return;
+          const alternative = prompt(
+            '이미지 설명을 입력해 주세요.',
+            target.alt,
+          )?.trim();
+          if (alternative === undefined || alternative === null) return;
+          target.alt = alternative;
+          onChange(editor.current?.innerHTML ?? '');
+          setMessage('이미지 설명이 수정되었습니다.');
+        }}
+      />
+      <small>이미지를 두 번 누르면 대체 설명을 수정할 수 있습니다.</small>
+      {message && <small>{message}</small>}
+    </div>
+  );
 }

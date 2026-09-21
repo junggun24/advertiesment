@@ -4,7 +4,10 @@ import { cloudflareEnv } from './cloudflare-env';
 function bytesToBase64Url(bytes: Uint8Array) {
   let binary = '';
   for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+  return btoa(binary)
+    .replaceAll('+', '-')
+    .replaceAll('/', '_')
+    .replace(/=+$/, '');
 }
 
 async function sign(value: string) {
@@ -17,7 +20,11 @@ async function sign(value: string) {
     false,
     ['sign'],
   );
-  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(value));
+  const signature = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    new TextEncoder().encode(value),
+  );
   return bytesToBase64Url(new Uint8Array(signature));
 }
 
@@ -47,8 +54,13 @@ export async function isAdminAuthenticated(request: Request) {
 
   if (!token) return false;
   const [expiresAt, signature] = token.split('.');
-  if (!expiresAt || !signature || Number(expiresAt) < Math.floor(Date.now() / 1000)) return false;
-  return signature === await sign(expiresAt);
+  if (
+    !expiresAt ||
+    !signature ||
+    Number(expiresAt) < Math.floor(Date.now() / 1000)
+  )
+    return false;
+  return signature === (await sign(expiresAt));
 }
 
 export function adminCookie(token: string, request: Request) {

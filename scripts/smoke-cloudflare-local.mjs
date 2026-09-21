@@ -6,7 +6,8 @@ const assert = (condition, message) => {
 };
 const json = async (response) => {
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || `${response.status} 요청 실패`);
+  if (!response.ok)
+    throw new Error(data.message || `${response.status} 요청 실패`);
   return data;
 };
 
@@ -39,7 +40,10 @@ const png = Buffer.from(
   'base64',
 );
 const form = new FormData();
-form.set('file', new File([png], 'cloudflare-local-smoke.png', { type: 'image/png' }));
+form.set(
+  'file',
+  new File([png], 'cloudflare-local-smoke.png', { type: 'image/png' }),
+);
 const uploaded = await json(
   await fetch(`${origin}/api/uploads`, {
     method: 'POST',
@@ -48,7 +52,10 @@ const uploaded = await json(
   }),
 );
 const image = await fetch(`${origin}${uploaded.url}`);
-assert(image.ok && image.headers.get('content-type') === 'image/png', 'R2 이미지 조회에 실패했습니다.');
+assert(
+  image.ok && image.headers.get('content-type') === 'image/png',
+  'R2 이미지 조회에 실패했습니다.',
+);
 const removedImage = await fetch(`${origin}${uploaded.url}`, {
   method: 'DELETE',
   headers: authHeaders,
@@ -56,6 +63,18 @@ const removedImage = await fetch(`${origin}${uploaded.url}`, {
 assert(removedImage.ok, 'R2 테스트 이미지 정리에 실패했습니다.');
 
 const marker = `cloudflare-local-${Date.now()}`;
+const rejectedInquiry = await fetch(`${origin}/api/inquiries`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({
+    name: '동의 누락 검증',
+    organization: 'OIC 테스트',
+    contact: marker,
+    message: '개인정보 동의가 없으면 저장되면 안 됩니다.',
+    attribution: '{}',
+  }),
+});
+assert(rejectedInquiry.status === 400, '개인정보 동의 누락 요청이 거부되지 않았습니다.');
 const inquiry = await fetch(`${origin}/api/inquiries`, {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
@@ -64,6 +83,7 @@ const inquiry = await fetch(`${origin}/api/inquiries`, {
     organization: 'OIC 테스트',
     contact: marker,
     message: 'D1 문의 저장 검증용 데이터입니다.',
+    privacyConsent: 'agreed',
     attribution: '{}',
   }),
 });
@@ -99,6 +119,7 @@ console.log(
     admin_login: true,
     r2_upload_read_delete: true,
     d1_inquiry_create_read_delete: true,
+    privacy_consent_required: true,
     excel_export: true,
   }),
 );

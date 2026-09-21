@@ -159,6 +159,9 @@ export async function buildInquiryWorkbook(rows) {
     '담당자',
     '처리상태',
     '문의내용',
+    '개인정보 동의',
+    '동의 문서 버전',
+    '동의 시각',
     '내부메모',
     '수집 점검',
     '방문 여정',
@@ -197,6 +200,9 @@ export async function buildInquiryWorkbook(rows) {
       row.assignee,
       statusLabels[row.status] || row.status,
       row.message,
+      row.privacy_consent ? '동의' : '기록 없음',
+      row.privacy_consent_version,
+      row.privacy_consented_at,
       row.memo,
       (Array.isArray(row.quality_flags) ? row.quality_flags : []).join(' / '),
       JSON.stringify(row.journey || {}),
@@ -207,7 +213,7 @@ export async function buildInquiryWorkbook(rows) {
     raw,
     [
       16, 12, 12, 12, 18, 22, 12, 22, 24, 22, 22, 22, 34, 12, 22, 24, 22, 22,
-      22, 34, 28, 16, 12, 12, 16, 10, 12, 12, 40, 36, 34, 55, 55,
+      22, 34, 28, 16, 12, 12, 16, 10, 12, 12, 40, 14, 18, 24, 36, 34, 55, 55,
     ],
   );
 

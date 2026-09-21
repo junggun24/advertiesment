@@ -13,7 +13,7 @@ export default function AdminLoginPage() {
 
   useEffect(() => {
     void fetch('/api/admin/session').then(async (response) => {
-      const data = await response.json() as { authenticated?: boolean };
+      const data = (await response.json()) as { authenticated?: boolean };
       if (data.authenticated) window.location.replace('/admin');
     });
   }, []);
@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
       }),
     });
     if (!response.ok) {
-      const data = await response.json() as { message?: string };
+      const data = (await response.json()) as { message?: string };
       setNotice(data.message ?? '로그인하지 못했습니다.');
       setSubmitting(false);
       return;
@@ -40,18 +40,41 @@ export default function AdminLoginPage() {
     window.location.replace('/admin');
   }
 
-  return <main className="admin-login-page">
-    <form className="admin-login-card" onSubmit={submit}>
-      <div className="admin-login-icon"><LockKeyhole /></div>
-      <small>OIC KOREA</small>
-      <h1>관리자 로그인</h1>
-      <p>문의 관리 페이지에 접속하려면 로그인해 주세요.</p>
-      <label>아이디<input autoComplete="username" value={id} onChange={(event) => setId(event.target.value)} required /></label>
-      <label>비밀번호<input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required /></label>
-      <TurnstileWidget action="admin_login" />
-      {notice && <p className="admin-login-notice">{notice}</p>}
-      <button disabled={submitting}>{submitting ? '확인 중...' : '로그인'}</button>
-      <Link href="/">사이트로 돌아가기</Link>
-    </form>
-  </main>;
+  return (
+    <main className="admin-login-page">
+      <form className="admin-login-card" onSubmit={submit}>
+        <div className="admin-login-icon">
+          <LockKeyhole />
+        </div>
+        <small>OIC KOREA</small>
+        <h1>관리자 로그인</h1>
+        <p>문의 관리 페이지에 접속하려면 로그인해 주세요.</p>
+        <label>
+          아이디
+          <input
+            autoComplete="username"
+            value={id}
+            onChange={(event) => setId(event.target.value)}
+            required
+          />
+        </label>
+        <label>
+          비밀번호
+          <input
+            type="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            required
+          />
+        </label>
+        <TurnstileWidget action="admin_login" />
+        {notice && <p className="admin-login-notice">{notice}</p>}
+        <button disabled={submitting}>
+          {submitting ? '확인 중...' : '로그인'}
+        </button>
+        <Link href="/">사이트로 돌아가기</Link>
+      </form>
+    </main>
+  );
 }

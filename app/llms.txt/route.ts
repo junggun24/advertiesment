@@ -22,5 +22,10 @@ export function GET() {
 - 전화: 032-719-7947
 - 이메일: sales@oickorea.com
 `;
-  return new Response(text, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+  return new Response(text, {
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'cache-control': 'public, max-age=3600',
+    },
+  });
 }

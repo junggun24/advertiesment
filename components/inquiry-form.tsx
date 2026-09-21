@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Paperclip } from 'lucide-react';
 import './inquiry-files.css';
 import { currentAttribution, trackInquiryEvent } from './attribution-tracker';
@@ -18,7 +19,7 @@ export function InquiryForm({ compact = false }: { compact?: boolean }) {
     setError('');
 
     try {
-      trackInquiryEvent('form_submit', '문의 접수 제출');
+      trackInquiryEvent('form_submit_attempt', '문의 접수 제출 시도');
       const form = new FormData(event.currentTarget);
       form.set('attribution', JSON.stringify(currentAttribution()));
       const response = await fetch('/api/inquiries', {
@@ -28,6 +29,7 @@ export function InquiryForm({ compact = false }: { compact?: boolean }) {
       const data = (await response.json()) as { message?: string };
       if (!response.ok)
         throw new Error(data.message || '문의 접수에 실패했습니다.');
+      trackInquiryEvent('submit_inquiry', '문의 접수 완료');
       if (window.location.pathname === '/inquiry')
         window.location.href = '/inquiry/complete';
       else setSent(true);
@@ -113,7 +115,13 @@ export function InquiryForm({ compact = false }: { compact?: boolean }) {
         )}
       </label>
       <label className="consent-row">
-        <input type="checkbox" required /> 개인정보 수집 및 이용에 동의합니다.
+        <input name="privacyConsent" type="checkbox" value="agreed" required />
+        <span>
+          <Link href="/privacy" target="_blank">
+            개인정보 수집 및 이용 안내
+          </Link>
+          를 확인했으며 이에 동의합니다. (필수)
+        </span>
       </label>
       <TurnstileWidget action="inquiry" />
       {error && <p className="form-error">{error}</p>}

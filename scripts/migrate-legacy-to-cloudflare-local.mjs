@@ -37,20 +37,32 @@ const d1File = readdirSync(d1Directory)
   .filter((name) => name.endsWith('.sqlite') && name !== 'metadata.sqlite')
   .map((name) => join(d1Directory, name))
   .sort((a, b) => statSync(b).size - statSync(a).size)[0];
-if (!d1File) throw new Error('로컬 D1 파일을 찾을 수 없습니다. 먼저 npm run db:init을 실행하세요.');
+if (!d1File)
+  throw new Error(
+    '로컬 D1 파일을 찾을 수 없습니다. 먼저 npm run db:init을 실행하세요.',
+  );
 
 const json = (value, fallback) =>
   JSON.stringify(value == null ? fallback : value);
 const time = (value) =>
-  value instanceof Date ? value.toISOString() : value == null ? null : String(value);
+  value instanceof Date
+    ? value.toISOString()
+    : value == null
+      ? null
+      : String(value);
 
-const content = (await pg.query('SELECT * FROM content_items ORDER BY id')).rows;
+const content = (await pg.query('SELECT * FROM content_items ORDER BY id'))
+  .rows;
 const inquiries = (await pg.query('SELECT * FROM inquiries ORDER BY id')).rows;
-const assets = (await pg.query('SELECT * FROM content_assets ORDER BY id')).rows;
+const assets = (await pg.query('SELECT * FROM content_assets ORDER BY id'))
+  .rows;
 
 for (const asset of assets) {
   const object = await s3.send(
-    new GetObjectCommand({ Bucket: process.env.MINIO_BUCKET, Key: asset.object_key }),
+    new GetObjectCommand({
+      Bucket: process.env.MINIO_BUCKET,
+      Key: asset.object_key,
+    }),
   );
   const bytes = await object.Body.transformToByteArray();
   const result = spawnSync(
@@ -74,7 +86,9 @@ for (const asset of assets) {
     { cwd: process.cwd(), input: Buffer.from(bytes), encoding: 'utf8' },
   );
   if (result.status !== 0) {
-    throw new Error(`R2 복사 실패: ${asset.object_key}\n${result.stderr || result.stdout}`);
+    throw new Error(
+      `R2 복사 실패: ${asset.object_key}\n${result.stderr || result.stdout}`,
+    );
   }
 }
 
@@ -93,20 +107,57 @@ try {
   `);
   for (const row of content) {
     contentSql.run(
-      Number(row.id), row.type, row.slug, row.title, json(row.data, {}),
-      Number(row.sort_order), row.published ? 1 : 0, time(row.created_at),
+      Number(row.id),
+      row.type,
+      row.slug,
+      row.title,
+      json(row.data, {}),
+      Number(row.sort_order),
+      row.published ? 1 : 0,
+      time(row.created_at),
       time(row.updated_at),
     );
   }
 
   const inquiryColumns = [
-    'id','name','organization','contact','message','status','assignee','memo',
-    'inquiry_channel','source_type','source_name','campaign','ad_group','keyword',
-    'content','landing_page','submitted_page','referrer','device_type','page_view_count',
-    'first_visited_at','elapsed_seconds','attribution_raw','last_source_type',
-    'last_source_name','last_campaign','last_ad_group','last_keyword','last_content',
-    'last_landing_page','last_referrer','session_count','session_page_view_count',
-    'last_visited_at','journey','quality_flags','created_at','updated_at',
+    'id',
+    'name',
+    'organization',
+    'contact',
+    'message',
+    'status',
+    'assignee',
+    'memo',
+    'inquiry_channel',
+    'source_type',
+    'source_name',
+    'campaign',
+    'ad_group',
+    'keyword',
+    'content',
+    'landing_page',
+    'submitted_page',
+    'referrer',
+    'device_type',
+    'page_view_count',
+    'first_visited_at',
+    'elapsed_seconds',
+    'attribution_raw',
+    'last_source_type',
+    'last_source_name',
+    'last_campaign',
+    'last_ad_group',
+    'last_keyword',
+    'last_content',
+    'last_landing_page',
+    'last_referrer',
+    'session_count',
+    'session_page_view_count',
+    'last_visited_at',
+    'journey',
+    'quality_flags',
+    'created_at',
+    'updated_at',
   ];
   const inquirySql = db.prepare(`
     INSERT INTO inquiries (${inquiryColumns.join(',')})
@@ -120,7 +171,7 @@ try {
     inquirySql.run(
       ...inquiryColumns.map((column) => {
         const value = row[column];
-        if (['attribution_raw','journey','quality_flags'].includes(column)) {
+        if (['attribution_raw', 'journey', 'quality_flags'].includes(column)) {
           return json(value, column === 'quality_flags' ? [] : {});
         }
         if (column.endsWith('_at')) return time(value);
@@ -140,8 +191,12 @@ try {
   `);
   for (const row of assets) {
     assetSql.run(
-      Number(row.id), row.object_key, row.original_name, row.content_type,
-      Number(row.size_bytes), row.inquiry_id == null ? null : Number(row.inquiry_id),
+      Number(row.id),
+      row.object_key,
+      row.original_name,
+      row.content_type,
+      Number(row.size_bytes),
+      row.inquiry_id == null ? null : Number(row.inquiry_id),
       time(row.created_at),
     );
   }

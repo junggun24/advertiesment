@@ -2,6 +2,90 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
-export const metadata:Metadata={title:'업무분야',description:'관공서와 프랜차이즈의 운영 목적에 맞춘 디스플레이 구축 방식을 소개합니다.',alternates:{canonical:'/business'}};
-const sectors=[{id:'public',label:'관공서 · 공공기관',title:'예산 집행부터 설치 증빙까지,\n공공 구매 절차에 맞춥니다.',text:'나라장터 등록 제품을 바탕으로 규격, 설치 범위와 유지보수 계획을 명확히 제안합니다.',items:['구정·시정 홍보 전자게시판','상황실 멀티비전·비디오월','안전·재난·기상 안내전광판'],image:'/oic/case-1.jpg'},{id:'franchise',label:'프랜차이즈 · 매장',title:'여러 지점의 화면을\n한 기준으로 구축합니다.',text:'전자메뉴판과 홍보 화면을 매장 환경에 맞춰 설치하고 본사 운영 방식을 함께 검토합니다.',items:['산업용 디스플레이 구성','지점별 설치 일정 관리','원격 콘텐츠 운영 지원'],image:'/oic/case-4.jpg'}];
-export default function BusinessPage(){return <main className="business-page"><section className="plain-hero"><h1>모니터가 필요한 이유는<br/>제각각 다릅니다</h1><p>고객의 구매 방식과 운영 환경을 먼저 이해하고 필요한 제품과 설치 범위를 제안합니다.</p></section>{sectors.map((sector,index)=><section className={`sector-row ${index%2?'reverse':''}`} id={sector.id} key={sector.id}><div><small>{sector.label}</small><h2>{sector.title.split('\n').map((v,i)=><span key={v}>{v}{i===0&&<br/>}</span>)}</h2><p>{sector.text}</p><ul>{sector.items.map(item=><li key={item}><Check/>{item}</li>)}</ul><Link href="/inquiry">이 조건으로 상담하기 <ArrowRight/></Link></div><Image unoptimized width={1200} height={800} src={sector.image} alt={`${sector.label} 설치 사례`}/></section>)}</main>}
+export const metadata: Metadata = {
+  title: '업무분야',
+  description:
+    '관공서와 프랜차이즈의 운영 목적에 맞춘 디스플레이 구축 방식을 소개합니다.',
+  alternates: { canonical: '/business' },
+};
+const sectors = [
+  {
+    id: 'public',
+    label: '관공서 · 공공기관',
+    title: '예산 집행부터 설치 증빙까지,\n공공 구매 절차에 맞춥니다.',
+    text: '나라장터 등록 제품을 바탕으로 규격, 설치 범위와 유지보수 계획을 명확히 제안합니다.',
+    items: [
+      '구정·시정 홍보 전자게시판',
+      '상황실 멀티비전·비디오월',
+      '안전·재난·기상 안내전광판',
+    ],
+    image: '/oic/case-1.jpg',
+  },
+  {
+    id: 'franchise',
+    label: '프랜차이즈 · 매장',
+    title: '여러 지점의 화면을\n한 기준으로 구축합니다.',
+    text: '전자메뉴판과 홍보 화면을 매장 환경에 맞춰 설치하고 본사 운영 방식을 함께 검토합니다.',
+    items: [
+      '산업용 디스플레이 구성',
+      '지점별 설치 일정 관리',
+      '원격 콘텐츠 운영 지원',
+    ],
+    image: '/oic/case-4.jpg',
+  },
+];
+export default function BusinessPage() {
+  return (
+    <main className="business-page">
+      <section className="plain-hero">
+        <h1>
+          모니터가 필요한 이유는
+          <br />
+          제각각 다릅니다
+        </h1>
+        <p>
+          고객의 구매 방식과 운영 환경을 먼저 이해하고 필요한 제품과 설치 범위를
+          제안합니다.
+        </p>
+      </section>
+      {sectors.map((sector, index) => (
+        <section
+          className={`sector-row ${index % 2 ? 'reverse' : ''}`}
+          id={sector.id}
+          key={sector.id}
+        >
+          <div>
+            <small>{sector.label}</small>
+            <h2>
+              {sector.title.split('\n').map((v, i) => (
+                <span key={v}>
+                  {v}
+                  {i === 0 && <br />}
+                </span>
+              ))}
+            </h2>
+            <p>{sector.text}</p>
+            <ul>
+              {sector.items.map((item) => (
+                <li key={item}>
+                  <Check />
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <Link href="/inquiry">
+              이 조건으로 상담하기 <ArrowRight />
+            </Link>
+          </div>
+          <Image
+            unoptimized
+            width={1200}
+            height={800}
+            src={sector.image}
+            alt={`${sector.label} 설치 사례`}
+          />
+        </section>
+      ))}
+    </main>
+  );
+}

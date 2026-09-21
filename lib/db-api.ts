@@ -44,7 +44,10 @@ function number(value: unknown, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-async function contentRequest(url: URL, init?: RequestInit): Promise<JsonRecord> {
+async function contentRequest(
+  url: URL,
+  init?: RequestInit,
+): Promise<JsonRecord> {
   const db = cloudflareEnv().DB;
   const method = (init?.method ?? 'GET').toUpperCase();
   const id = Number(url.pathname.match(/^\/content\/(\d+)$/)?.[1]);
@@ -112,7 +115,10 @@ async function contentRequest(url: URL, init?: RequestInit): Promise<JsonRecord>
   }
 
   if (Number.isInteger(id) && method === 'DELETE') {
-    const result = await db.prepare('DELETE FROM content_items WHERE id=?').bind(id).run();
+    const result = await db
+      .prepare('DELETE FROM content_items WHERE id=?')
+      .bind(id)
+      .run();
     if (!result.meta.changes) throw new Error('콘텐츠가 없습니다.');
     return { ok: true };
   }
@@ -120,7 +126,10 @@ async function contentRequest(url: URL, init?: RequestInit): Promise<JsonRecord>
   throw new Error('지원하지 않는 콘텐츠 요청입니다.');
 }
 
-async function inquiryRequest(url: URL, init?: RequestInit): Promise<JsonRecord> {
+async function inquiryRequest(
+  url: URL,
+  init?: RequestInit,
+): Promise<JsonRecord> {
   const { DB: db, FILES: files } = cloudflareEnv();
   const method = (init?.method ?? 'GET').toUpperCase();
   const id = Number(url.pathname.match(/^\/inquiries\/(\d+)$/)?.[1]);
@@ -129,31 +138,78 @@ async function inquiryRequest(url: URL, init?: RequestInit): Promise<JsonRecord>
     const value = requestBody(init);
     const tracking = (value.attribution ?? {}) as Record<string, unknown>;
     const columns = [
-      'name', 'organization', 'contact', 'message', 'inquiry_channel',
-      'source_type', 'source_name', 'campaign', 'ad_group', 'keyword',
-      'content', 'landing_page', 'submitted_page', 'referrer', 'device_type',
-      'page_view_count', 'first_visited_at', 'elapsed_seconds', 'attribution_raw',
-      'last_source_type', 'last_source_name', 'last_campaign', 'last_ad_group',
-      'last_keyword', 'last_content', 'last_landing_page', 'last_referrer',
-      'session_count', 'session_page_view_count', 'last_visited_at', 'journey',
+      'name',
+      'organization',
+      'contact',
+      'message',
+      'inquiry_channel',
+      'source_type',
+      'source_name',
+      'campaign',
+      'ad_group',
+      'keyword',
+      'content',
+      'landing_page',
+      'submitted_page',
+      'referrer',
+      'device_type',
+      'page_view_count',
+      'first_visited_at',
+      'elapsed_seconds',
+      'attribution_raw',
+      'last_source_type',
+      'last_source_name',
+      'last_campaign',
+      'last_ad_group',
+      'last_keyword',
+      'last_content',
+      'last_landing_page',
+      'last_referrer',
+      'session_count',
+      'session_page_view_count',
+      'last_visited_at',
+      'journey',
       'quality_flags',
+      'privacy_consent',
+      'privacy_consent_version',
+      'privacy_consented_at',
     ];
     const values = [
-      text(value.name), text(value.organization), text(value.contact), text(value.message),
-      text(tracking.inquiryChannel, '상담신청 폼'), text(tracking.sourceType, 'Unknown'),
-      text(tracking.sourceName, '확인 불가'), text(tracking.campaign),
-      text(tracking.adGroup), text(tracking.keyword), text(tracking.content),
-      text(tracking.landingPage), text(tracking.submittedPage), text(tracking.referrer),
-      text(tracking.deviceType), number(tracking.pageViewCount, 1),
-      text(tracking.firstVisitedAt) || null, number(tracking.elapsedSeconds),
-      JSON.stringify(tracking.raw ?? {}), text(tracking.lastSourceType, 'Unknown'),
-      text(tracking.lastSourceName, '확인 불가'), text(tracking.lastCampaign),
-      text(tracking.lastAdGroup), text(tracking.lastKeyword), text(tracking.lastContent),
-      text(tracking.lastLandingPage), text(tracking.lastReferrer),
-      number(tracking.sessionCount, 1), number(tracking.sessionPageViewCount, 1),
+      text(value.name),
+      text(value.organization),
+      text(value.contact),
+      text(value.message),
+      text(tracking.inquiryChannel, '상담신청 폼'),
+      text(tracking.sourceType, 'Unknown'),
+      text(tracking.sourceName, '확인 불가'),
+      text(tracking.campaign),
+      text(tracking.adGroup),
+      text(tracking.keyword),
+      text(tracking.content),
+      text(tracking.landingPage),
+      text(tracking.submittedPage),
+      text(tracking.referrer),
+      text(tracking.deviceType),
+      number(tracking.pageViewCount, 1),
+      text(tracking.firstVisitedAt) || null,
+      number(tracking.elapsedSeconds),
+      JSON.stringify(tracking.raw ?? {}),
+      text(tracking.lastSourceType, 'Unknown'),
+      text(tracking.lastSourceName, '확인 불가'),
+      text(tracking.lastCampaign),
+      text(tracking.lastAdGroup),
+      text(tracking.lastKeyword),
+      text(tracking.lastContent),
+      text(tracking.lastLandingPage),
+      text(tracking.lastReferrer),
+      number(tracking.sessionCount, 1),
+      number(tracking.sessionPageViewCount, 1),
       text(tracking.lastVisitedAt) || null,
       JSON.stringify(tracking.journey ?? { pages: [], events: [] }),
       JSON.stringify(tracking.qualityFlags ?? []),
+      value.privacyConsent === true ? 1 : 0,
+      text(value.privacyConsentVersion),
+      value.privacyConsent === true ? new Date().toISOString() : null,
     ];
     const result = await db
       .prepare(
@@ -174,7 +230,9 @@ async function inquiryRequest(url: URL, init?: RequestInit): Promise<JsonRecord>
       .prepare('SELECT * FROM inquiries ORDER BY created_at DESC')
       .all<Record<string, unknown>>();
     const assets = await db
-      .prepare('SELECT * FROM content_assets WHERE inquiry_id IS NOT NULL ORDER BY id')
+      .prepare(
+        'SELECT * FROM content_assets WHERE inquiry_id IS NOT NULL ORDER BY id',
+      )
       .all<Record<string, unknown>>();
     const grouped = new Map<number, Record<string, unknown>[]>();
     for (const asset of assets.results) {
@@ -215,8 +273,13 @@ async function inquiryRequest(url: URL, init?: RequestInit): Promise<JsonRecord>
       .prepare('SELECT object_key FROM content_assets WHERE inquiry_id=?')
       .bind(id)
       .all<{ object_key: string }>();
-    await Promise.all(assets.results.map((asset) => files.delete(asset.object_key)));
-    const result = await db.prepare('DELETE FROM inquiries WHERE id=?').bind(id).run();
+    await Promise.all(
+      assets.results.map((asset) => files.delete(asset.object_key)),
+    );
+    const result = await db
+      .prepare('DELETE FROM inquiries WHERE id=?')
+      .bind(id)
+      .run();
     if (!result.meta.changes) throw new Error('문의가 없습니다.');
     return { ok: true };
   }

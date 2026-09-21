@@ -24,7 +24,8 @@ export async function saveUpload(
   scope: UploadScope,
   inquiryId: number | null = null,
 ) {
-  if (!allowedTypes.has(file.type)) throw new Error('허용되지 않는 파일 형식입니다.');
+  if (!allowedTypes.has(file.type))
+    throw new Error('허용되지 않는 파일 형식입니다.');
   if (scope === 'content' && !file.type.startsWith('image/')) {
     throw new Error('콘텐츠에는 이미지 파일만 업로드할 수 있습니다.');
   }
@@ -48,7 +49,13 @@ export async function saveUpload(
        (object_key,original_name,content_type,size_bytes,inquiry_id)
        VALUES (?,?,?,?,?)`,
     )
-      .bind(key, file.name, file.type || 'application/octet-stream', file.size, inquiryId)
+      .bind(
+        key,
+        file.name,
+        file.type || 'application/octet-stream',
+        file.size,
+        inquiryId,
+      )
       .run();
     return {
       id: result.meta.last_row_id,
@@ -57,7 +64,10 @@ export async function saveUpload(
       content_type: file.type,
       size_bytes: file.size,
       inquiry_id: inquiryId,
-      url: scope === 'inquiry' ? `/api/admin/assets/${key}` : `/api/uploads/${key}`,
+      url:
+        scope === 'inquiry'
+          ? `/api/admin/assets/${key}`
+          : `/api/uploads/${key}`,
     };
   } catch (error) {
     await FILES.delete(key);
@@ -68,7 +78,9 @@ export async function saveUpload(
 export async function deleteUpload(key: string) {
   const { DB, FILES } = cloudflareEnv();
   await FILES.delete(key);
-  await DB.prepare('DELETE FROM content_assets WHERE object_key=?').bind(key).run();
+  await DB.prepare('DELETE FROM content_assets WHERE object_key=?')
+    .bind(key)
+    .run();
 }
 
 export async function uploadResponse(key: string, isPrivate: boolean) {

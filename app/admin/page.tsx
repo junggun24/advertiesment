@@ -1,7 +1,106 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, FilePenLine, Link2, LogOut, MessageSquareText, MonitorCog, Search } from 'lucide-react';
+import {
+  ArrowRight,
+  FilePenLine,
+  Link2,
+  LogOut,
+  MessageSquareText,
+  MonitorCog,
+  Search,
+} from 'lucide-react';
 import './dashboard.css';
-const cards=[{href:'/admin/inquiries',icon:MessageSquareText,title:'문의 관리',text:'접수된 상담 내용을 확인하고 처리 상태를 관리합니다.'},{href:'/admin/content',icon:FilePenLine,title:'콘텐츠 관리',text:'제품, 설치사례, FAQ와 사이트 기본정보를 관리합니다.'},{href:'/admin/models',icon:MonitorCog,title:'제품 사양·가격',text:'조달 모델의 사양과 가격을 관리하고 Excel로 내보냅니다.'},{href:'/admin/utm',icon:Link2,title:'UTM 링크 생성',text:'광고, QR, 이메일용 추적 링크를 같은 규칙으로 만듭니다.'},{href:'/admin/seo',icon:Search,title:'SEO 관리',text:'검색 결과 제목, 설명, 키워드와 공유 이미지를 관리합니다.'}];
-export default function AdminDashboardPage(){const [ready,setReady]=useState(false);useEffect(()=>{void fetch('/api/admin/session').then(async r=>{const d=await r.json() as {authenticated?:boolean};if(!d.authenticated){location.replace('/admin/login');return}setReady(true)}).catch(()=>location.replace('/admin/login'))},[]);async function logout(){await fetch('/api/admin/session',{method:'DELETE'});location.replace('/admin/login')}if(!ready)return <main className="admin-gate"><p>관리자 권한을 확인하고 있습니다.</p></main>;return <main className="admin-dashboard"><header><div><small>OIC KOREA</small><h1>관리자 페이지</h1><p>관리할 항목을 선택하세요.</p></div><span><Link href="/">사이트 보기</Link><button onClick={()=>void logout()}><LogOut/>로그아웃</button></span></header><section>{cards.map(card=>{const Icon=card.icon;return <Link href={card.href} key={card.href}><div className="admin-dashboard-icon"><Icon/></div><small>MANAGEMENT</small><h2>{card.title}</h2><p>{card.text}</p><strong>{card.title} 열기 <ArrowRight/></strong></Link>})}</section></main>}
+const cards = [
+  {
+    href: '/admin/inquiries',
+    icon: MessageSquareText,
+    title: '문의 관리',
+    text: '접수된 상담 내용을 확인하고 처리 상태를 관리합니다.',
+  },
+  {
+    href: '/admin/content',
+    icon: FilePenLine,
+    title: '콘텐츠 관리',
+    text: '제품, 설치사례, FAQ와 사이트 기본정보를 관리합니다.',
+  },
+  {
+    href: '/admin/models',
+    icon: MonitorCog,
+    title: '제품 사양·가격',
+    text: '조달 모델의 사양과 가격을 관리하고 Excel로 내보냅니다.',
+  },
+  {
+    href: '/admin/utm',
+    icon: Link2,
+    title: 'UTM 링크 생성',
+    text: '광고, QR, 이메일용 추적 링크를 같은 규칙으로 만듭니다.',
+  },
+  {
+    href: '/admin/seo',
+    icon: Search,
+    title: 'SEO 관리',
+    text: '검색 결과 제목, 설명, 키워드와 공유 이미지를 관리합니다.',
+  },
+];
+export default function AdminDashboardPage() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    void fetch('/api/admin/session')
+      .then(async (r) => {
+        const d = (await r.json()) as { authenticated?: boolean };
+        if (!d.authenticated) {
+          location.replace('/admin/login');
+          return;
+        }
+        setReady(true);
+      })
+      .catch(() => location.replace('/admin/login'));
+  }, []);
+  async function logout() {
+    await fetch('/api/admin/session', { method: 'DELETE' });
+    location.replace('/admin/login');
+  }
+  if (!ready)
+    return (
+      <main className="admin-gate">
+        <p>관리자 권한을 확인하고 있습니다.</p>
+      </main>
+    );
+  return (
+    <main className="admin-dashboard">
+      <header>
+        <div>
+          <small>OIC KOREA</small>
+          <h1>관리자 페이지</h1>
+          <p>관리할 항목을 선택하세요.</p>
+        </div>
+        <span>
+          <Link href="/">사이트 보기</Link>
+          <button onClick={() => void logout()}>
+            <LogOut />
+            로그아웃
+          </button>
+        </span>
+      </header>
+      <section>
+        {cards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Link href={card.href} key={card.href}>
+              <div className="admin-dashboard-icon">
+                <Icon />
+              </div>
+              <small>MANAGEMENT</small>
+              <h2>{card.title}</h2>
+              <p>{card.text}</p>
+              <strong>
+                {card.title} 열기 <ArrowRight />
+              </strong>
+            </Link>
+          );
+        })}
+      </section>
+    </main>
+  );
+}

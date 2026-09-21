@@ -2,6 +2,205 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Save } from 'lucide-react';
-import { defaultSeoSettings, type SeoSettings, type ContentItem } from '@/lib/content-types';
+import {
+  defaultSeoSettings,
+  type SeoSettings,
+  type ContentItem,
+} from '@/lib/content-types';
 import './seo.css';
-export default function SeoAdminPage(){const [item,setItem]=useState<ContentItem<SeoSettings>|null>(null);const [seo,setSeo]=useState(defaultSeoSettings);const [notice,setNotice]=useState('불러오는 중...');useEffect(()=>{void fetch('/api/admin/session').then(async r=>{const session=await r.json() as {authenticated?:boolean};if(!session.authenticated){location.replace('/admin/login');return}const response=await fetch('/api/content?type=seo',{cache:'no-store'});const data=await response.json() as {items?:ContentItem<SeoSettings>[]};const saved=data.items?.[0];if(saved){setItem(saved);setSeo({...defaultSeoSettings,...saved.data})}setNotice('')}).catch(()=>setNotice('설정을 불러오지 못했습니다.'))},[]);function update<K extends keyof SeoSettings>(key:K,value:SeoSettings[K]){setSeo(v=>({...v,[key]:value}))}async function save(e:React.SyntheticEvent<HTMLFormElement>){e.preventDefault();setNotice('저장 중...');const payload=item?{...item,data:seo}:{type:'seo',slug:'global',title:'전역 SEO 설정',data:seo,sort_order:0,published:true};const r=await fetch(item?`/api/content/${item.id}`:'/api/content',{method:item?'PUT':'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});const result=await r.json() as ContentItem<SeoSettings>&{message?:string};if(!r.ok){setNotice(result.message??'저장하지 못했습니다.');return}setItem(result);setNotice('저장되었습니다. 다음 페이지 요청부터 적용됩니다.')}return <main className="seo-admin"><header className="admin-header"><Link href="/admin"><ArrowLeft/> 관리자 홈</Link><div><small>OIC KOREA</small><b>SEO 관리</b></div><Link href="/">사이트 보기</Link></header><form onSubmit={save}><div className="seo-heading"><div><h1>검색 노출 설정</h1><p>사이트 전체의 검색 결과와 소셜 공유 정보를 관리합니다.</p></div><button><Save/> 저장</button></div><div className="seo-grid"><section><h2>기본 정보</h2><label>사이트 이름<input required value={seo.siteName} onChange={e=>update('siteName',e.target.value)}/></label><label>사이트 주소<input required type="url" value={seo.siteUrl} onChange={e=>update('siteUrl',e.target.value)}/></label><label>기본 페이지 제목<input required value={seo.title} onChange={e=>update('title',e.target.value)}/></label><label>하위 페이지 제목 형식<input required value={seo.titleTemplate} onChange={e=>update('titleTemplate',e.target.value)}/><small>%s 위치에 페이지 제목이 들어갑니다.</small></label><label>검색 결과 설명<textarea required rows={4} value={seo.description} onChange={e=>update('description',e.target.value)}/><small>{seo.description.length}자 · 80~160자 권장</small></label><label>키워드<textarea rows={3} value={seo.keywords.join(', ')} onChange={e=>update('keywords',e.target.value.split(',').map(v=>v.trim()).filter(Boolean))}/></label></section><section><h2>소셜 공유</h2><label>공유 제목<input required value={seo.ogTitle} onChange={e=>update('ogTitle',e.target.value)}/></label><label>공유 설명<textarea required rows={4} value={seo.ogDescription} onChange={e=>update('ogDescription',e.target.value)}/></label><label>공유 이미지 경로<input required value={seo.ogImage} onChange={e=>update('ogImage',e.target.value)}/></label><div className="seo-preview"><small>검색 결과 미리보기</small><b>{seo.title}</b><span>{seo.siteUrl}</span><p>{seo.description}</p></div><label className="seo-check"><input aria-label="검색엔진 색인 허용" type="checkbox" checked={seo.allowIndexing} onChange={e=>update('allowIndexing',e.target.checked)}/><span><b>검색엔진 색인 허용</b><small>끄면 사이트 전체가 noindex 처리됩니다.</small></span></label></section></div>{notice&&<p className="seo-notice">{notice}</p>}</form></main>}
+export default function SeoAdminPage() {
+  const [item, setItem] = useState<ContentItem<SeoSettings> | null>(null);
+  const [seo, setSeo] = useState(defaultSeoSettings);
+  const [notice, setNotice] = useState('불러오는 중...');
+  useEffect(() => {
+    void fetch('/api/admin/session')
+      .then(async (r) => {
+        const session = (await r.json()) as { authenticated?: boolean };
+        if (!session.authenticated) {
+          location.replace('/admin/login');
+          return;
+        }
+        const response = await fetch('/api/content?type=seo', {
+          cache: 'no-store',
+        });
+        const data = (await response.json()) as {
+          items?: ContentItem<SeoSettings>[];
+        };
+        const saved = data.items?.[0];
+        if (saved) {
+          setItem(saved);
+          setSeo({ ...defaultSeoSettings, ...saved.data });
+        }
+        setNotice('');
+      })
+      .catch(() => setNotice('설정을 불러오지 못했습니다.'));
+  }, []);
+  function update<K extends keyof SeoSettings>(key: K, value: SeoSettings[K]) {
+    setSeo((v) => ({ ...v, [key]: value }));
+  }
+  async function save(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setNotice('저장 중...');
+    const payload = item
+      ? { ...item, data: seo }
+      : {
+          type: 'seo',
+          slug: 'global',
+          title: '전역 SEO 설정',
+          data: seo,
+          sort_order: 0,
+          published: true,
+        };
+    const r = await fetch(item ? `/api/content/${item.id}` : '/api/content', {
+      method: item ? 'PUT' : 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const result = (await r.json()) as ContentItem<SeoSettings> & {
+      message?: string;
+    };
+    if (!r.ok) {
+      setNotice(result.message ?? '저장하지 못했습니다.');
+      return;
+    }
+    setItem(result);
+    setNotice('저장되었습니다. 다음 페이지 요청부터 적용됩니다.');
+  }
+  return (
+    <main className="seo-admin">
+      <header className="admin-header">
+        <Link href="/admin">
+          <ArrowLeft /> 관리자 홈
+        </Link>
+        <div>
+          <small>OIC KOREA</small>
+          <b>SEO 관리</b>
+        </div>
+        <Link href="/">사이트 보기</Link>
+      </header>
+      <form onSubmit={save}>
+        <div className="seo-heading">
+          <div>
+            <h1>검색 노출 설정</h1>
+            <p>사이트 전체의 검색 결과와 소셜 공유 정보를 관리합니다.</p>
+          </div>
+          <button>
+            <Save /> 저장
+          </button>
+        </div>
+        <div className="seo-grid">
+          <section>
+            <h2>기본 정보</h2>
+            <label>
+              사이트 이름
+              <input
+                required
+                value={seo.siteName}
+                onChange={(e) => update('siteName', e.target.value)}
+              />
+            </label>
+            <label>
+              사이트 주소
+              <input
+                required
+                type="url"
+                value={seo.siteUrl}
+                onChange={(e) => update('siteUrl', e.target.value)}
+              />
+            </label>
+            <label>
+              기본 페이지 제목
+              <input
+                required
+                value={seo.title}
+                onChange={(e) => update('title', e.target.value)}
+              />
+            </label>
+            <label>
+              하위 페이지 제목 형식
+              <input
+                required
+                value={seo.titleTemplate}
+                onChange={(e) => update('titleTemplate', e.target.value)}
+              />
+              <small>%s 위치에 페이지 제목이 들어갑니다.</small>
+            </label>
+            <label>
+              검색 결과 설명
+              <textarea
+                required
+                rows={4}
+                value={seo.description}
+                onChange={(e) => update('description', e.target.value)}
+              />
+              <small>{seo.description.length}자 · 80~160자 권장</small>
+            </label>
+            <label>
+              키워드
+              <textarea
+                rows={3}
+                value={seo.keywords.join(', ')}
+                onChange={(e) =>
+                  update(
+                    'keywords',
+                    e.target.value
+                      .split(',')
+                      .map((v) => v.trim())
+                      .filter(Boolean),
+                  )
+                }
+              />
+            </label>
+          </section>
+          <section>
+            <h2>소셜 공유</h2>
+            <label>
+              공유 제목
+              <input
+                required
+                value={seo.ogTitle}
+                onChange={(e) => update('ogTitle', e.target.value)}
+              />
+            </label>
+            <label>
+              공유 설명
+              <textarea
+                required
+                rows={4}
+                value={seo.ogDescription}
+                onChange={(e) => update('ogDescription', e.target.value)}
+              />
+            </label>
+            <label>
+              공유 이미지 경로
+              <input
+                required
+                value={seo.ogImage}
+                onChange={(e) => update('ogImage', e.target.value)}
+              />
+            </label>
+            <div className="seo-preview">
+              <small>검색 결과 미리보기</small>
+              <b>{seo.title}</b>
+              <span>{seo.siteUrl}</span>
+              <p>{seo.description}</p>
+            </div>
+            <label className="seo-check">
+              <input
+                aria-label="검색엔진 색인 허용"
+                type="checkbox"
+                checked={seo.allowIndexing}
+                onChange={(e) => update('allowIndexing', e.target.checked)}
+              />
+              <span>
+                <b>검색엔진 색인 허용</b>
+                <small>끄면 사이트 전체가 noindex 처리됩니다.</small>
+              </span>
+            </label>
+          </section>
+        </div>
+        {notice && <p className="seo-notice">{notice}</p>}
+      </form>
+    </main>
+  );
+}

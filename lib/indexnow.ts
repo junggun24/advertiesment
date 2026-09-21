@@ -28,7 +28,9 @@ export async function notifyIndexNow(paths: string[]) {
     return false;
   }
   const origin = new URL(PUBLIC_SITE_URL);
-  const urlList = [...new Set(paths)].map((path) => new URL(path, origin).toString());
+  const urlList = [...new Set(paths)].map((path) =>
+    new URL(path, origin).toString(),
+  );
   try {
     const response = await fetch('https://api.indexnow.org/indexnow', {
       method: 'POST',
@@ -42,10 +44,16 @@ export async function notifyIndexNow(paths: string[]) {
       signal: AbortSignal.timeout(8_000),
     });
     if (!response.ok) {
-      logWarning('indexnow.rejected', { status: response.status, urls: urlList.length });
+      logWarning('indexnow.rejected', {
+        status: response.status,
+        urls: urlList.length,
+      });
       return false;
     }
-    logInfo('indexnow.submitted', { status: response.status, urls: urlList.length });
+    logInfo('indexnow.submitted', {
+      status: response.status,
+      urls: urlList.length,
+    });
     return true;
   } catch {
     logWarning('indexnow.failed', { urls: urlList.length });

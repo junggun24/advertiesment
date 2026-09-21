@@ -1,4 +1,5 @@
-const origin = process.env.PRODUCTION_ORIGIN || 'https://display.dsko.workers.dev';
+const origin =
+  process.env.PRODUCTION_ORIGIN || 'https://display.dsko.workers.dev';
 
 async function check(path, validate) {
   const response = await fetch(`${origin}${path}`, {
@@ -13,7 +14,8 @@ async function check(path, validate) {
 const results = {};
 results.home = await check('/', async (response) => {
   const html = await response.text();
-  if (!html.includes('오아이씨코리아')) throw new Error('메인 페이지 내용이 올바르지 않습니다.');
+  if (!html.includes('오아이씨코리아'))
+    throw new Error('메인 페이지 내용이 올바르지 않습니다.');
 });
 results.health = await check('/api/health', async (response) => {
   const data = await response.json();

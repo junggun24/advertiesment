@@ -31,6 +31,9 @@ type Inquiry = {
   memo: string;
   created_at: string;
   updated_at: string;
+  privacy_consent: number;
+  privacy_consent_version: string;
+  privacy_consented_at: string | null;
   attachments: Attachment[];
   inquiry_channel: string;
   source_type: string;
@@ -182,13 +185,23 @@ export default function InquiryAdmin() {
   const aiSearchStats = useMemo(() => {
     const counts = new Map<string, number>();
     for (const item of dated) {
-      const value = `${item.source_name} ${item.last_source_name}`.toLowerCase();
-      const label = /chatgpt|openai/.test(value) ? 'ChatGPT' : /perplexity/.test(value) ? 'Perplexity' : /gemini|bard/.test(value) ? 'Gemini' : '';
+      const value =
+        `${item.source_name} ${item.last_source_name}`.toLowerCase();
+      const label = /chatgpt|openai/.test(value)
+        ? 'ChatGPT'
+        : /perplexity/.test(value)
+          ? 'Perplexity'
+          : /gemini|bard/.test(value)
+            ? 'Gemini'
+            : '';
       if (label) counts.set(label, (counts.get(label) || 0) + 1);
     }
     return [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }, [dated]);
-  const aiSearchCount = aiSearchStats.reduce((sum, [, count]) => sum + count, 0);
+  const aiSearchCount = aiSearchStats.reduce(
+    (sum, [, count]) => sum + count,
+    0,
+  );
   const actionStats = useMemo(() => {
     const labels: Record<string, string> = {
       phone_click: '전화 클릭',
@@ -477,6 +490,12 @@ export default function InquiryAdmin() {
               <article>
                 <h2>문의 내용</h2>
                 <p>{selected.message}</p>
+                <small>
+                  개인정보 동의:{' '}
+                  {selected.privacy_consent
+                    ? `확인 · ${display(selected.privacy_consented_at)} · 문서 ${display(selected.privacy_consent_version)}`
+                    : '기존 문의 또는 동의 기록 없음'}
+                </small>
               </article>
               <section className="attribution-detail">
                 <div>

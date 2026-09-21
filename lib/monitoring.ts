@@ -1,6 +1,10 @@
 type LogData = Record<string, string | number | boolean | null | undefined>;
 
-function entry(level: 'info' | 'warn' | 'error', event: string, data: LogData = {}) {
+function entry(
+  level: 'info' | 'warn' | 'error',
+  event: string,
+  data: LogData = {},
+) {
   return JSON.stringify({
     level,
     event,
@@ -18,8 +22,10 @@ export function logWarning(event: string, data?: LogData) {
 }
 
 export function logError(event: string, error: unknown, data: LogData = {}) {
-  console.error(entry('error', event, {
-    ...data,
-    error: error instanceof Error ? error.message : 'unknown error',
-  }));
+  console.error(
+    entry('error', event, {
+      ...data,
+      error: error instanceof Error ? error.message : 'unknown error',
+    }),
+  );
 }

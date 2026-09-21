@@ -46,6 +46,33 @@ type StoredAttribution = {
   events?: JourneyEvent[];
 };
 
+declare global {
+  interface Window {
+    dataLayer?: Array<Record<string, unknown>>;
+  }
+}
+
+const measurementNames: Record<string, string> = {
+  phone_click: 'click_phone',
+  chat_click: 'click_kakao',
+  cta_click: 'click_cta',
+  form_start: 'begin_inquiry',
+  file_attach: 'attach_file',
+  form_submit_attempt: 'submit_inquiry_attempt',
+  submit_inquiry: 'submit_inquiry',
+};
+
+function emitMeasurement(type: string, label: string) {
+  const detail = {
+    event: measurementNames[type] || type,
+    event_label: label.trim().slice(0, 120),
+    page_path: page(),
+  };
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(detail);
+  window.dispatchEvent(new CustomEvent('oic:measurement', { detail }));
+}
+
 function read(): StoredAttribution {
   try {
     return JSON.parse(
@@ -108,6 +135,7 @@ function recordEvent(type: string, label: string) {
   saved.events = events.slice(-100);
   saved.lastActivityAt = new Date().toISOString();
   write(saved);
+  emitMeasurement(type, label);
 }
 export function trackInquiryEvent(type: string, label: string) {
   recordEvent(type, label);
@@ -164,6 +192,17 @@ export function AttributionTracker() {
     pages.push({ path: page(), enteredAt: iso, durationSeconds: 0 });
     saved.pages = pages.slice(-100);
     write(saved);
+    emitMeasurement('page_view', document.title);
+    if (pathname.startsWith('/products/'))
+      emitMeasurement(
+        'view_product',
+        pathname.split('/').filter(Boolean).at(-1) || 'product',
+      );
+    if (pathname.startsWith('/cases/'))
+      emitMeasurement(
+        'view_case',
+        pathname.split('/').filter(Boolean).at(-1) || 'case',
+      );
 
     const onClick = (event: MouseEvent) => {
       const target = (event.target as HTMLElement | null)?.closest('a,button');

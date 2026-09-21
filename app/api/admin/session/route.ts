@@ -6,7 +6,11 @@ import {
   isAdminAuthenticated,
 } from '@/lib/admin-auth';
 import { logInfo, logWarning } from '@/lib/monitoring';
-import { enforceRateLimit, rateLimitHeaders, verifyTurnstile } from '@/lib/security';
+import {
+  enforceRateLimit,
+  rateLimitHeaders,
+  verifyTurnstile,
+} from '@/lib/security';
 
 export async function GET(request: Request) {
   return Response.json({ authenticated: await isAdminAuthenticated(request) });
@@ -20,15 +24,20 @@ export async function POST(request: Request) {
       { status: 429, headers: rateLimitHeaders(rateLimit) },
     );
   }
-  const body = await request.json() as {
+  const body = (await request.json()) as {
     id?: unknown;
     password?: unknown;
     turnstileToken?: unknown;
   };
   const id = typeof body.id === 'string' ? body.id : '';
   const password = typeof body.password === 'string' ? body.password : '';
-  const turnstileToken = typeof body.turnstileToken === 'string' ? body.turnstileToken : '';
-  const challenge = await verifyTurnstile(request, turnstileToken, 'admin_login');
+  const turnstileToken =
+    typeof body.turnstileToken === 'string' ? body.turnstileToken : '';
+  const challenge = await verifyTurnstile(
+    request,
+    turnstileToken,
+    'admin_login',
+  );
   if (!challenge.success) {
     return Response.json(
       { message: challenge.reason },
@@ -38,7 +47,10 @@ export async function POST(request: Request) {
 
   if (!credentialsAreValid(id, password)) {
     logWarning('admin.login_failed');
-    return Response.json({ message: '아이디 또는 비밀번호가 올바르지 않습니다.' }, { status: 401 });
+    return Response.json(
+      { message: '아이디 또는 비밀번호가 올바르지 않습니다.' },
+      { status: 401 },
+    );
   }
 
   const token = await createAdminSession();
