@@ -9,7 +9,7 @@ process.loadEnvFile?.('.env.local');
 
 const skipR2 = process.argv.includes('--skip-r2');
 const remoteR2Bucket = 'ad-bucket';
-const publicSiteUrl = 'https://oic-korea.oic-korea.workers.dev';
+const publicSiteUrl = 'https://display.dsko.workers.dev';
 const required = ['DATABASE_URL'];
 if (!skipR2) {
   required.push(

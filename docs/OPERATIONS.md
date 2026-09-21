@@ -9,7 +9,7 @@
 ### 최초 1회 활성화
 
 1. Cloudflare API 토큰(Workers Scripts 편집, D1 편집, R2 편집 권한)을 GitHub Actions secret `CLOUDFLARE_API_TOKEN`으로 등록한다.
-2. Turnstile 위젯에 `oic-korea.oic-korea.workers.dev`와 추후 연결할 운영 도메인을 등록한다.
+2. Turnstile 위젯에 `display.dsko.workers.dev`와 추후 연결할 운영 도메인을 등록한다.
 3. 사이트 키는 Worker 변수 `TURNSTILE_SITE_KEY`, 비밀키는 Worker secret `TURNSTILE_SECRET_KEY`로 등록한다.
 4. 운영 도메인을 연결하면 `TURNSTILE_ALLOWED_HOSTNAMES`도 쉼표로 구분해 갱신한다.
 

@@ -1,4 +1,4 @@
-const origin = process.env.PRODUCTION_ORIGIN || 'https://oic-korea.oic-korea.workers.dev';
+const origin = process.env.PRODUCTION_ORIGIN || 'https://display.dsko.workers.dev';
 
 async function check(path, validate) {
   const response = await fetch(`${origin}${path}`, {
