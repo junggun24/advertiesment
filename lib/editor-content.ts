@@ -1,0 +1,8 @@
+type ImageContent={thumbnail?:unknown;body?:unknown;image?:unknown};
+export function extractFirstImage(html?:string){const src=html?.match(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i)?.[1]?.trim();return src&&isSafeImageUrl(src)?src:''}
+export function resolveContentImage(content:ImageContent){return safeImage(content.thumbnail)||extractFirstImage(text(content.body))||safeImage(content.image)}
+export function sanitizeEditorHtml(value:string){return value.replace(/<\/?(?:script|style|iframe|object|embed|form|input|button|textarea|select|option|link|meta)\b[^>]*>/gi,'').replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi,'').replace(/\s+(?:href|src)\s*=\s*(["'])\s*(?:javascript|data:text\/html)[\s\S]*?\1/gi,'').replace(/\s+style\s*=\s*(?:"[^"]*"|'[^']*')/gi,'')}
+export function normalizeEditorPayload(value:unknown){if(!value||typeof value!=='object')return value;const record=value as Record<string,unknown>;if(record.type!=='product'&&record.type!=='case')return value;const data=record.data&&typeof record.data==='object'?record.data as Record<string,unknown>:{};return{...record,data:{...data,body:sanitizeEditorHtml(String(data.body??'')),thumbnail:String(data.thumbnail??'').trim()}}}
+function safeImage(value?:unknown){const normalized=typeof value==='string'?value.trim():'';return isSafeImageUrl(normalized)?normalized:''}
+function text(value:unknown){return typeof value==='string'?value:undefined}
+function isSafeImageUrl(value:string){return value.startsWith('/')||/^https?:\/\//i.test(value)}

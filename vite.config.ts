@@ -46,9 +46,16 @@ export default defineConfig(async () => {
 
   return {
     css: { postcss: { plugins: [tailwindcss()] } },
-    server: isCodexSeatbeltSandbox
-      ? { watch: { useFsEvents: false, usePolling: true } }
-      : undefined,
+    server: {
+      // Listen on the LAN interface so the site is reachable through the
+      // router's port-forwarding rule, not only from this Mac.
+      host: '0.0.0.0',
+      // Allow requests forwarded from the configured public DDNS hostname.
+      allowedHosts: ['domob.ddns.net'],
+      ...(isCodexSeatbeltSandbox
+        ? { watch: { useFsEvents: false, usePolling: true } }
+        : {}),
+    },
     plugins: [
       vinext(),
       sites(),

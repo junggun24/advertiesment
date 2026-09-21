@@ -1,0 +1,34 @@
+.inquiry-files {
+  border: 1px dashed #cbd2dc;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 13px !important;
+}
+
+.inquiry-files > span {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+}
+
+.inquiry-files svg {
+  width: 17px;
+}
+
+.inquiry-files input {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 8px 0 !important;
+}
+
+.inquiry-files small {
+  color: #7b8794;
+  font-weight: 500;
+}
+
+.inquiry-files ul {
+  color: #52606d;
+  font-weight: 500;
+  margin: 3px 0 0;
+  padding-left: 18px;
+}

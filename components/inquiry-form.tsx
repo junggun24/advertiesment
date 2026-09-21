@@ -1,11 +1,93 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Paperclip } from 'lucide-react';
+import './inquiry-files.css';
 
-export function InquiryForm({compact=false}:{compact?:boolean}){
-  const [sent,setSent]=useState(false); const [sending,setSending]=useState(false); const [error,setError]=useState('');
-  return <form className={compact?'quote-form compact':'quote-form'} onSubmit={async e=>{e.preventDefault();setSending(true);setError('');const form=new FormData(e.currentTarget);try{const response=await fetch('/api/inquiries',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.fromEntries(form))});const data=await response.json() as {message?:string};if(!response.ok)throw new Error(data.message||'문의 접수에 실패했습니다.');setSent(true)}catch(err){setError(err instanceof Error?err.message:'문의 접수에 실패했습니다.')}finally{setSending(false)}}}>
-    {sent?<div className="success"><CheckCircle2/><h3>문의가 접수되었습니다.</h3><p>담당자가 내용을 확인한 뒤 연락드립니다.</p><button type="button" onClick={()=>setSent(false)}>다시 작성</button></div>:<><div className="row"><label>이름<input name="name" required maxLength={40} placeholder="담당자 성함"/></label><label>기관·회사명<input name="organization" required maxLength={100} placeholder="기관 또는 회사명"/></label></div><label>연락처<input name="contact" required maxLength={40} type="tel" placeholder="010-0000-0000"/></label><label>문의 내용<textarea name="message" required maxLength={2000} rows={compact?3:5} placeholder="설치 장소, 사용 목적, 대략적인 크기와 예산을 적어주세요."/></label><label className="consent"><input required type="checkbox"/> 개인정보 수집 및 이용에 동의합니다.</label>{error&&<p className="form-error" role="alert">{error}</p>}<button className="submit" disabled={sending}>{sending?'접수 중...':'견적 문의 보내기'} <ArrowRight/></button></>}
-  </form>;
+export function InquiryForm({ compact = false }: { compact?: boolean }) {
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const [fileNames, setFileNames] = useState<string[]>([]);
+
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSending(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        body: new FormData(event.currentTarget),
+      });
+      const data = (await response.json()) as { message?: string };
+      if (!response.ok) throw new Error(data.message || '문의 접수에 실패했습니다.');
+      if (window.location.pathname === '/inquiry') window.location.href='/inquiry/complete';
+      else setSent(true);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : '문의 접수에 실패했습니다.');
+    } finally {
+      setSending(false);
+    }
+  }
+
+  if (sent) {
+    return (
+      <div className="inquiry-success">
+        <CheckCircle2 />
+        <strong>문의가 접수되었습니다.</strong>
+        <p>담당자가 확인한 뒤 입력하신 연락처로 안내해 드리겠습니다.</p>
+      </div>
+    );
+  }
+
+  return (
+    <form className={compact ? 'inquiry-form compact' : 'inquiry-form'} onSubmit={submit}>
+      <label>
+        이름
+        <input name="name" required placeholder="이름을 입력해 주세요" />
+      </label>
+      <label>
+        회사·기관명
+        <input name="organization" required placeholder="회사 또는 기관명을 입력해 주세요" />
+      </label>
+      <label>
+        연락처
+        <input name="contact" required placeholder="전화번호 또는 이메일" />
+      </label>
+      <label>
+        문의 내용
+        <textarea name="message" required rows={compact ? 4 : 6} placeholder="필요한 제품과 설치 환경을 알려주세요." />
+      </label>
+      <label className="inquiry-files">
+        <span><Paperclip /> 참고 파일 첨부</span>
+        <input
+          name="files"
+          type="file"
+          multiple
+          accept="image/jpeg,image/png,image/webp,image/gif,application/pdf,.doc,.docx,.xls,.xlsx,.txt"
+          onChange={(event) => {
+            const files = Array.from(event.currentTarget.files || []);
+            if (files.length > 5) {
+              event.currentTarget.value = '';
+              setFileNames([]);
+              setError('첨부파일은 최대 5개까지 등록할 수 있습니다.');
+              return;
+            }
+            setError('');
+            setFileNames(files.map((file) => file.name));
+          }}
+        />
+        <small>이미지·PDF·문서, 파일당 10MB 이하, 최대 5개</small>
+        {fileNames.length > 0 && <ul>{fileNames.map((name) => <li key={name}>{name}</li>)}</ul>}
+      </label>
+      <label className="consent-row">
+        <input type="checkbox" required /> 개인정보 수집 및 이용에 동의합니다.
+      </label>
+      {error && <p className="form-error">{error}</p>}
+      <button type="submit" className="primary-button" disabled={sending}>
+        {sending ? '접수 중...' : '문의 접수'} <ArrowRight />
+      </button>
+    </form>
+  );
 }

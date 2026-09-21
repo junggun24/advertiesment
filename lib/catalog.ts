@@ -1,5 +1,5 @@
 export type Product = {
-  slug: string; name: string; category: string; summary: string; image: string;
+  slug: string; name: string; category: string; summary: string; image: string; thumbnail?:string; body?:string;
   features: string[]; uses: string[]; price: string; status: string;
 };
 
@@ -9,7 +9,7 @@ export const products: Product[] = [
   { slug:'outdoor-kiosk', name:'옥외용 키오스크', category:'영상정보디스플레이장치', summary:'햇빛과 비바람 속에서도 안정적으로 정보를 제공하는 독립형 장치', image:'/oic-outdoor-kiosk.jpg', features:['고휘도 화면','방수·방진 구조','터치 기능 선택'], uses:['공공청사','공원·광장','문화시설'], price:'시안 기준 9,900,000원부터', status:'최종 규격·조달 식별번호 확인 필요' },
 ];
 
-export type CaseStudy = { slug:string; title:string; place:string; purpose:string; productSlug:string; summary:string; status:string; image:string };
+export type CaseStudy = { slug:string; title:string; place:string; purpose:string; productSlug:string; summary:string; status:string; image:string; thumbnail?:string; body?:string };
 export const cases: CaseStudy[] = [
   { slug:'public-office-board', title:'공공청사 시정 홍보 전자게시판', place:'공공청사', purpose:'시정 홍보', productSlug:'information-led-board', summary:'청사 방문객과 시민에게 주요 행정 소식과 생활 정보를 전달하는 구성입니다.', status:'첨부 시안 사례 · 기관명 확인 필요', image:'/oic/case-1.jpg' },
   { slug:'safety-information-board', title:'안전보건 안내전광판', place:'안전 현장', purpose:'안전 안내', productSlug:'information-led-board', summary:'작업자에게 안전수칙과 현장 정보를 실시간으로 전달하는 구성입니다.', status:'첨부 시안 사례 · 기관명 확인 필요', image:'/oic/case-2.jpg' },
