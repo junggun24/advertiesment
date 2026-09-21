@@ -1,0 +1,8 @@
+.info-list h2 a{color:inherit}
+.direct-answer{font-size:17px}
+.faq-details{margin:22px 0;line-height:1.8;color:#475467}
+.faq-details h2{font-size:20px;margin:26px 0 10px}
+.faq-details img{display:block;width:auto;max-width:100%;height:auto;margin:22px auto;border-radius:10px}
+.content-trust{display:flex;flex-wrap:wrap;gap:10px 22px;margin:22px 0;padding:14px 16px;background:#f6f8fb;border-radius:8px}
+.content-trust div{display:flex;gap:7px}.content-trust dt{font-weight:800}.content-trust dd{margin:0;color:#667085}
+.content-sources{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:20px 0}.content-sources a{margin:0!important;padding:6px 9px;border:1px solid var(--line);border-radius:6px;font-size:12px}

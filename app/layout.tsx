@@ -9,6 +9,7 @@ import { SiteFooter } from '@/components/site-footer';
 import './design-refresh.css';
 import { getContentItems } from '@/lib/content-data';
 import { defaultSeoSettings, type SeoSettings } from '@/lib/content-types';
+import { AttributionTracker } from '@/components/attribution-tracker';
 
 export async function generateMetadata():Promise<Metadata>{const [saved]=await getContentItems<SeoSettings>('seo');const seo={...defaultSeoSettings,...saved};return {
   metadataBase: new URL(seo.siteUrl),
@@ -28,5 +29,5 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       {'@type':'WebSite','@id':'https://oic-korea-display.changsoft101.chatgpt.site/#website',url:'https://oic-korea-display.changsoft101.chatgpt.site/',name:'오아이씨코리아',publisher:{'@id':'https://oic-korea-display.changsoft101.chatgpt.site/#organization'},potentialAction:{'@type':'SearchAction',target:'https://oic-korea-display.changsoft101.chatgpt.site/info?q={search_term_string}','query-input':'required name=search_term_string'}}
     ]
   };
-  return <html lang="ko"><body><SiteHeader/>{children}<SiteFooter/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}} /></body></html>;
+  return <html lang="ko"><body><AttributionTracker/><SiteHeader/>{children}<SiteFooter/><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(schema)}} /></body></html>;
 }

@@ -1,7 +1,5 @@
-const ADMIN_ID = 'admin';
-const ADMIN_PASSWORD = 'admin123';
 const SESSION_MAX_AGE = 60 * 60 * 12;
-const SESSION_SECRET = 'oic-local-admin-session-2026';
+import { cloudflareEnv } from './cloudflare-env';
 
 function bytesToBase64Url(bytes: Uint8Array) {
   let binary = '';
@@ -10,9 +8,11 @@ function bytesToBase64Url(bytes: Uint8Array) {
 }
 
 async function sign(value: string) {
+  const secret = cloudflareEnv().ADMIN_SESSION_SECRET;
+  if (!secret) throw new Error('관리자 세션 비밀키가 설정되지 않았습니다.');
   const key = await crypto.subtle.importKey(
     'raw',
-    new TextEncoder().encode(SESSION_SECRET),
+    new TextEncoder().encode(secret),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign'],
@@ -22,7 +22,13 @@ async function sign(value: string) {
 }
 
 export function credentialsAreValid(id: string, password: string) {
-  return id === ADMIN_ID && password === ADMIN_PASSWORD;
+  const config = cloudflareEnv();
+  return Boolean(
+    config.ADMIN_LOGIN_ID &&
+    config.ADMIN_LOGIN_PASSWORD &&
+    id === config.ADMIN_LOGIN_ID &&
+    password === config.ADMIN_LOGIN_PASSWORD,
+  );
 }
 
 export async function createAdminSession() {
