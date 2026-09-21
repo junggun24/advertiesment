@@ -2,8 +2,15 @@ import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { dbApi } from '@/lib/db-api';
 import { normalizeAttribution } from '@/lib/inquiry-attribution';
 import { saveUpload } from '@/lib/object-storage';
+import { logError, logInfo } from '@/lib/monitoring';
+import { enforceRateLimit, rateLimitHeaders, verifyTurnstile } from '@/lib/security';
 
 export async function POST(request: Request) {
+  const rateLimit=await enforceRateLimit(request,'inquiry',5,10*60);
+  if(!rateLimit.allowed)return Response.json(
+    {message:'문의 접수가 너무 많습니다. 잠시 후 다시 시도해 주세요.'},
+    {status:429,headers:rateLimitHeaders(rateLimit)},
+  );
   const isMultipart=request.headers.get('content-type')?.includes('multipart/form-data');
   const form=isMultipart?await request.formData():null;
   const body=form?Object.fromEntries(form.entries()):await request.json() as Record<string, unknown>;
@@ -13,6 +20,11 @@ export async function POST(request: Request) {
   const organization = asText(body.organization).trim();
   const contact = asText(body.contact).trim();
   const message = asText(body.message).trim();
+  const challenge=await verifyTurnstile(request,asText(body.turnstileToken),'inquiry');
+  if(!challenge.success)return Response.json(
+    {message:challenge.reason},
+    {status:403,headers:rateLimitHeaders(rateLimit)},
+  );
   let rawAttribution:unknown = {};
   try { rawAttribution=JSON.parse(asText(body.attribution)||'{}'); } catch { rawAttribution={}; }
   const attribution=normalizeAttribution(rawAttribution,{referrer:request.headers.get('referer')??'',userAgent:request.headers.get('user-agent')??''});
@@ -32,8 +44,10 @@ export async function POST(request: Request) {
     const inquiry=await dbApi('/inquiries', { method:'POST', body:JSON.stringify({ name, organization, contact, message, attribution }) }) as {id:number};
     try{for(const file of files)await saveUpload(file,'inquiry',inquiry.id)}
     catch(error){await dbApi(`/inquiries/${inquiry.id}`,{method:'DELETE'});throw error}
+    logInfo('inquiry.created',{inquiryId:inquiry.id,attachments:files.length});
     return Response.json({ ok:true });
   } catch (error) {
+    logError('inquiry.create_failed',error);
     return Response.json({ message:error instanceof Error ? error.message : '문의 접수에 실패했습니다.' }, { status:503 });
   }
 }

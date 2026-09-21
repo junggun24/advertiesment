@@ -1,0 +1,10 @@
+.turnstile-field {
+  grid-column: 1 / -1;
+  min-height: 65px;
+}
+
+.turnstile-field > p {
+  color: #b42318;
+  font-size: 0.82rem;
+  margin: 0.5rem 0 0;
+}

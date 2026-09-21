@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ArrowRight, CheckCircle2, Paperclip } from 'lucide-react';
 import './inquiry-files.css';
 import { currentAttribution, trackInquiryEvent } from './attribution-tracker';
+import { TurnstileWidget } from './turnstile-widget';
 
 export function InquiryForm({ compact = false }: { compact?: boolean }) {
   const [sent, setSent] = useState(false);
@@ -114,6 +115,7 @@ export function InquiryForm({ compact = false }: { compact?: boolean }) {
       <label className="consent-row">
         <input type="checkbox" required /> 개인정보 수집 및 이용에 동의합니다.
       </label>
+      <TurnstileWidget action="inquiry" />
       {error && <p className="form-error">{error}</p>}
       <button type="submit" className="primary-button" disabled={sending}>
         {sending ? '접수 중...' : '문의 접수'} <ArrowRight />

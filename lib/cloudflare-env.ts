@@ -6,6 +6,9 @@ export type OicCloudflareEnv = {
   ADMIN_LOGIN_ID?: string;
   ADMIN_LOGIN_PASSWORD?: string;
   ADMIN_SESSION_SECRET?: string;
+  TURNSTILE_SITE_KEY?: string;
+  TURNSTILE_SECRET_KEY?: string;
+  TURNSTILE_ALLOWED_HOSTNAMES?: string;
 };
 
 export function cloudflareEnv() {

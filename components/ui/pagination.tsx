@@ -60,7 +60,9 @@ function PaginationLink({
           data-slot="pagination-link"
           data-active={isActive}
           {...props}
-        />
+        >
+          <span className="sr-only">페이지 링크</span>
+        </a>
       }
     />
   );
