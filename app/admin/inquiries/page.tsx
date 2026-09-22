@@ -202,6 +202,15 @@ export default function InquiryAdmin() {
     (sum, [, count]) => sum + count,
     0,
   );
+  const organicSearchStats = useMemo(() => {
+    const engines = ['구글 검색', '네이버 검색', '빙 검색', '다음 검색'];
+    return engines.map((name) => ({
+      name,
+      count: dated.filter(
+        (item) => item.source_type === 'Organic' && item.source_name === name,
+      ).length,
+    }));
+  }, [dated]);
   const actionStats = useMemo(() => {
     const labels: Record<string, string> = {
       phone_click: '전화 클릭',
@@ -402,6 +411,16 @@ export default function InquiryAdmin() {
           ) : (
             <small>ChatGPT·Perplexity·Gemini 유입 문의가 아직 없습니다.</small>
           )}
+        </div>
+        <div>
+          <h2>검색엔진별 견적 문의</h2>
+          {organicSearchStats.map(({ name, count }) => (
+            <p key={name}>
+              <span>{name}</span>
+              <b>{count}건</b>
+            </p>
+          ))}
+          <small>최초 유입 기준 · 전환율은 검색엔진별 방문 수 연동 후 표시</small>
         </div>
       </section>
       <section className="admin-stats">

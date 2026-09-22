@@ -16,15 +16,18 @@
 
 - [x] IndexNow 키 발급 및 `/indexnow-key.txt` 키 파일 배치
 - [x] 제품·설치사례·FAQ 저장, 수정, 삭제 시 IndexNow 자동 알림 연결
-- [ ] 방문 분석 도구 연결
+- [x] 방문 분석 도구 연결 (Cloudflare Web Analytics 자동 설치, `dsko.co.kr`)
 - [x] ChatGPT·Perplexity·Gemini 유입 문의 보고서 생성
 - [ ] 검색엔진별 자연 검색 전환과 견적 문의 전환 측정
+  - 관리자 문의 화면에 구글·네이버·빙·다음 검색별 문의 건수를 추가했다. 전환율 계산에는 검색엔진별 방문 수가 더 필요하다.
 
 ## 운영 품질
 
-- [ ] Google Rich Results Test로 제품·회사·담당자·Breadcrumb 검사
+- [x] Google Rich Results Test로 제품·회사·담당자·Breadcrumb 검사
+  - 2026-09-22 제품 페이지 재검사에서 제품 스니펫·탐색경로·지역 업체·회사 항목이 모두 유효했다. 담당자 페이지의 Person 스키마는 검사했으나 Google 리치 결과 유형으로는 표시되지 않았다.
 - [ ] Search Console Core Web Vitals의 LCP, INP, CLS 확인
 - [ ] 모바일 PageSpeed Insights 점검
+  - 공개 API가 429로 응답했다. 대체 Lighthouse 모바일 단일 실행은 성능 60점, LCP 9.0초였으나 브라우저 캐시 정리 시간 초과 경고가 있어 재측정이 필요하다.
 - [ ] 실제 제품 규격, 설치 실적, 작성자·검수자·근거 출처 보강
 - [x] 제품 상세 페이지와 조달 모델 규격·가격 데이터 자동 연결
 - [x] 관리자에 조달번호 중복, 규격·출처 누락, 본문 이미지 설명 누락 경고 추가
