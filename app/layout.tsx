@@ -65,6 +65,7 @@ export default function RootLayout({
         name: '주식회사 오아이씨코리아',
         url: `${PUBLIC_SITE_URL}/`,
         logo: `${PUBLIC_SITE_URL}/oic/logo.png`,
+        image: `${PUBLIC_SITE_URL}/oic/logo.png`,
         telephone: '+82-32-719-7947',
         email: 'sales@oickorea.com',
         address: {

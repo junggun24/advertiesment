@@ -11,6 +11,7 @@ import {
 } from '@/lib/content-data';
 import { prepareEditorHtml, resolveContentImage } from '@/lib/editor-content';
 import { getDisplayModels } from '@/lib/display-model-data';
+import { PUBLIC_SITE_URL } from '@/lib/content-types';
 import '../../detail-seo.css';
 
 async function storedProduct(slug: string) {
@@ -107,12 +108,33 @@ export default async function ProductDetail({
     product.priceAmount && Number(product.priceAmount) > 0
       ? Number(product.priceAmount)
       : null;
+  const registeredPrices = linkedModels
+    .map((model) => model.registered_price)
+    .filter((price) => Number.isFinite(price) && price > 0);
+  const offers = amount
+    ? {
+        '@type': 'Offer',
+        price: amount,
+        priceCurrency: 'KRW',
+        availability: 'https://schema.org/InStock',
+        url: `${PUBLIC_SITE_URL}/products/${slug}`,
+      }
+    : registeredPrices.length
+      ? {
+          '@type': 'AggregateOffer',
+          lowPrice: Math.min(...registeredPrices),
+          highPrice: Math.max(...registeredPrices),
+          offerCount: registeredPrices.length,
+          priceCurrency: 'KRW',
+          url: `${PUBLIC_SITE_URL}/products/${slug}`,
+        }
+      : undefined;
   const schema = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Product',
-        '@id': `/products/${slug}#product`,
+        '@id': `${PUBLIC_SITE_URL}/products/${slug}#product`,
         name: product.name,
         image: product.image || undefined,
         description: product.summary,
@@ -124,33 +146,28 @@ export default async function ProductDetail({
           name,
           value,
         })),
-        ...(amount
-          ? {
-              offers: {
-                '@type': 'Offer',
-                price: amount,
-                priceCurrency: 'KRW',
-                availability: 'https://schema.org/InStock',
-                url: `/products/${slug}`,
-              },
-            }
-          : {}),
+        ...(offers ? { offers } : {}),
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: '홈', item: '/' },
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: '홈',
+            item: `${PUBLIC_SITE_URL}/`,
+          },
           {
             '@type': 'ListItem',
             position: 2,
             name: '제품소개',
-            item: '/products',
+            item: `${PUBLIC_SITE_URL}/products`,
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: product.name,
-            item: `/products/${slug}`,
+            item: `${PUBLIC_SITE_URL}/products/${slug}`,
           },
         ],
       },

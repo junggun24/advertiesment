@@ -11,6 +11,7 @@ import {
 } from '@/lib/catalog';
 import { getContentItems, getContentRecords } from '@/lib/content-data';
 import { prepareEditorHtml, resolveContentImage } from '@/lib/editor-content';
+import { PUBLIC_SITE_URL } from '@/lib/content-types';
 import '../../detail-seo.css';
 
 async function storedCase(slug: string) {
@@ -93,7 +94,7 @@ export default async function CaseDetail({
     '@graph': [
       {
         '@type': 'Article',
-        '@id': `/cases/${slug}#article`,
+        '@id': `${PUBLIC_SITE_URL}/cases/${slug}#article`,
         headline: item.title,
         description: item.summary,
         image: item.image || undefined,
@@ -108,25 +109,30 @@ export default async function CaseDetail({
           ? {
               '@type': 'Product',
               name: product.name,
-              url: `/products/${product.slug}`,
+              url: `${PUBLIC_SITE_URL}/products/${product.slug}`,
             }
           : undefined,
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: '홈', item: '/' },
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: '홈',
+            item: `${PUBLIC_SITE_URL}/`,
+          },
           {
             '@type': 'ListItem',
             position: 2,
             name: '설치사례',
-            item: '/cases',
+            item: `${PUBLIC_SITE_URL}/cases`,
           },
           {
             '@type': 'ListItem',
             position: 3,
             name: item.title,
-            item: `/cases/${slug}`,
+            item: `${PUBLIC_SITE_URL}/cases/${slug}`,
           },
         ],
       },

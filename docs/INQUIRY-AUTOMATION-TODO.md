@@ -16,9 +16,9 @@
 
 ### 스팸 방지
 
-- [ ] Cloudflare Turnstile 위젯 발급 후 운영 키 연결
-  - 현재 OAuth 인증에 `challenge-widgets.write` 권한이 없어 자동 발급이 차단됨
-  - Cloudflare 대시보드에서 위젯을 만들거나 해당 권한으로 다시 로그인한 뒤 `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`를 등록
+- [x] Cloudflare Turnstile 위젯 발급 후 운영 키 연결
+  - `dsko.co.kr` 위젯을 만들고 Worker의 `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`를 secret으로 등록했다.
+  - 운영 `/api/security/config`에서 `enabled: true`, `required: true`를 확인했다.
 
 ### 분석 도구
 
