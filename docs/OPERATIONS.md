@@ -10,12 +10,12 @@
 ### 최초 1회 활성화
 
 1. Cloudflare API 토큰(Workers Scripts 편집, D1 편집, R2 편집 권한)을 GitHub Actions secret `CLOUDFLARE_API_TOKEN`으로 등록한다.
-2. Turnstile 위젯에 `display.dsko.co.kr`과 `display.dsko.workers.dev`를 등록한다.
+2. Turnstile 위젯에 `dsko.co.kr`을 등록한다. 이 설정은 `display.dsko.co.kr`도 포함한다.
 3. 사이트 키는 Worker 변수 `TURNSTILE_SITE_KEY`, 비밀키는 Worker secret `TURNSTILE_SECRET_KEY`로 등록한다.
-4. `TURNSTILE_ALLOWED_HOSTNAMES`는 `display.dsko.co.kr,display.dsko.workers.dev`로 설정한다.
+4. `TURNSTILE_ALLOWED_HOSTNAMES`는 `dsko.co.kr,display.dsko.co.kr`로 설정한다.
 5. `INDEXNOW_KEY`는 Worker secret으로 유지한다. 콘텐츠와 제품 사양을 변경하면 IndexNow 알림이 자동 전송된다.
 
-Turnstile 위젯 자동 발급에는 Cloudflare API 토큰의 `challenge-widgets.write` 권한이 필요하다. 권한이 없는 경우 대시보드에서 위젯을 만든 뒤 세 Worker secret을 등록한다.
+Turnstile 위젯 자동 발급에는 Cloudflare API 토큰의 `challenge-widgets.write` 권한이 필요하다. 권한이 없는 경우 대시보드에서 위젯을 만든 뒤 사이트 키와 비밀키, 허용 호스트명을 Worker에 등록한다.
 
 ## 보안
 
@@ -23,6 +23,9 @@ Turnstile 위젯 자동 발급에는 Cloudflare API 토큰의 `challenge-widgets
 - 관리자 로그인: IP 해시 기준 15분당 5회로 제한한다.
 - `TURNSTILE_SITE_KEY`와 `TURNSTILE_SECRET_KEY`가 설정되면 문의와 관리자 로그인은 Turnstile 서버 검증을 통과해야 한다.
 - Turnstile 키를 만들기 전에도 요청 제한은 항상 적용되며, 키가 없으면 `security.turnstile_not_configured` 경고를 남긴다.
+- Cloudflare `dsko.co.kr` 영역은 최소 TLS 1.2, HTTPS 강제 전환, HSTS 1개월(`includeSubDomains`와 preload 제외)을 사용한다.
+- Cloudflare 응답 헤더 규칙 `DSKO security response headers`가 `X-Frame-Options`, `Content-Security-Policy`의 `frame-ancestors`, `Referrer-Policy`를 설정한다. Cloudflare Edge Certificates에서 `X-Content-Type-Options: nosniff`도 설정한다.
+- Worker의 `workers.dev` 및 미리보기 URL은 배포 설정에서 비활성화한다. 공식 주소는 `https://display.dsko.co.kr`이다.
 
 ## 모니터링
 
