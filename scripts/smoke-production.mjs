@@ -1,5 +1,5 @@
 const origin =
-  process.env.PRODUCTION_ORIGIN || 'https://display.dsko.workers.dev';
+  process.env.PRODUCTION_ORIGIN || 'https://dsko.co.kr';
 
 async function check(path, validate) {
   const response = await fetch(`${origin}${path}`, {

@@ -45,7 +45,7 @@ export type SeoSettings = {
   ogImage: string;
   allowIndexing: boolean;
 };
-export const PUBLIC_SITE_URL = 'https://display.dsko.workers.dev';
+export const PUBLIC_SITE_URL = 'https://dsko.co.kr';
 export const defaultSeoSettings: SeoSettings = {
   siteName: '오아이씨코리아',
   siteUrl: PUBLIC_SITE_URL,
