@@ -10,9 +10,9 @@
 ### 최초 1회 활성화
 
 1. Cloudflare API 토큰(Workers Scripts 편집, D1 편집, R2 편집 권한)을 GitHub Actions secret `CLOUDFLARE_API_TOKEN`으로 등록한다.
-2. Turnstile 위젯에 `dsko.co.kr`과 `display.dsko.workers.dev`를 등록한다.
+2. Turnstile 위젯에 `display.dsko.co.kr`과 `display.dsko.workers.dev`를 등록한다.
 3. 사이트 키는 Worker 변수 `TURNSTILE_SITE_KEY`, 비밀키는 Worker secret `TURNSTILE_SECRET_KEY`로 등록한다.
-4. `TURNSTILE_ALLOWED_HOSTNAMES`는 `dsko.co.kr,display.dsko.workers.dev`로 설정한다.
+4. `TURNSTILE_ALLOWED_HOSTNAMES`는 `display.dsko.co.kr,display.dsko.workers.dev`로 설정한다.
 5. `INDEXNOW_KEY`는 Worker secret으로 유지한다. 콘텐츠와 제품 사양을 변경하면 IndexNow 알림이 자동 전송된다.
 
 Turnstile 위젯 자동 발급에는 Cloudflare API 토큰의 `challenge-widgets.write` 권한이 필요하다. 권한이 없는 경우 대시보드에서 위젯을 만든 뒤 세 Worker secret을 등록한다.
