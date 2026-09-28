@@ -41,3 +41,19 @@ void test('warns about duplicate procurement identifiers', () => {
     ),
   );
 });
+
+void test('warns when case thumbnail metadata is incomplete', () => {
+  const issues = contentQualityIssues('case', {
+    body: '<p>설치 상세</p>',
+    installedAt: '2026-09-28',
+    challenge: '문제',
+    solution: '해결',
+    result: '결과',
+    author: '작성자',
+    reviewer: '검수자',
+    sourceUrls: ['https://example.com'],
+  });
+  assert.ok(issues.some((value) => value.includes('모델명')));
+  assert.ok(issues.some((value) => value.includes('단·열')));
+  assert.ok(issues.some((value) => value.includes('도로명')));
+});

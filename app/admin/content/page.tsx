@@ -17,6 +17,7 @@ import { RichTextEditor } from '@/components/rich-text-editor';
 import { extractFirstImage } from '@/lib/editor-content';
 import { contentQualityIssues } from '@/lib/content-quality';
 import { optimizeImageForUpload } from '@/lib/client-image';
+import { CASE_PURPOSES } from '@/lib/case-categories';
 import './upload.css';
 import './seo-fields.css';
 
@@ -31,6 +32,7 @@ type Field = {
   list?: boolean;
   image?: boolean;
   editor?: boolean;
+  options?: readonly string[];
   inputType?: 'text' | 'date' | 'number' | 'url';
 };
 const labels: Record<EditableType, string> = {
@@ -127,7 +129,12 @@ const fields: Record<EditableType, Field[]> = {
   case: [
     { key: 'title', label: '사례명', section: '기본 정보', required: true },
     { key: 'place', label: '설치 장소', required: true },
-    { key: 'purpose', label: '설치 목적', required: true },
+    {
+      key: 'purpose',
+      label: '설치 목적',
+      required: true,
+      options: CASE_PURPOSES,
+    },
     { key: 'productSlug', label: '연결 제품 slug', required: true },
     {
       key: 'summary',
@@ -163,6 +170,16 @@ const fields: Record<EditableType, Field[]> = {
     { key: 'solution', label: '적용한 해결 방법', multiline: true },
     { key: 'result', label: '설치 결과', multiline: true },
     { key: 'modelName', label: '적용 모델명' },
+    {
+      key: 'displayRows',
+      label: '화면 구성',
+      help: '작성자는 숫자만 입력하며 가운데 × 표시는 화면에 고정됩니다.',
+    },
+    {
+      key: 'clientAddress',
+      label: '도입 수요기관 도로명',
+      help: '썸네일에 공개 가능한 도로명 주소를 입력하세요.',
+    },
     { key: 'specifications', label: '적용 규격', multiline: true, list: true },
     { key: 'projectDuration', label: '공사·설치 기간' },
     {
@@ -491,7 +508,36 @@ export default function ContentAdminPage() {
                     <h2>{field.section}</h2>
                   </div>
                 )}
-                {field.editor ? (
+                {type === 'case' && field.key === 'displayRows' ? (
+                  <label className="wide case-grid-size-field">
+                    {field.label}
+                    <span>
+                      <input
+                        type="number"
+                        min="1"
+                        inputMode="numeric"
+                        placeholder="단"
+                        value={value('displayRows')}
+                        onChange={(event) =>
+                          change('displayRows', event.target.value)
+                        }
+                      />
+                      <b aria-hidden="true">×</b>
+                      <input
+                        type="number"
+                        min="1"
+                        inputMode="numeric"
+                        placeholder="열"
+                        aria-label="화면 열 수"
+                        value={value('displayColumns')}
+                        onChange={(event) =>
+                          change('displayColumns', event.target.value)
+                        }
+                      />
+                    </span>
+                    {field.help && <small>{field.help}</small>}
+                  </label>
+                ) : field.editor ? (
                   <div className="wide editor-field">
                     <b>{field.label}</b>
                     <RichTextEditor
@@ -515,6 +561,25 @@ export default function ContentAdminPage() {
                     }
                     onChange={(next) => change(field.key, next)}
                   />
+                ) : field.options ? (
+                  <label className={field.multiline ? 'wide' : ''}>
+                    {field.label}
+                    <select
+                      required={field.required}
+                      value={value(field.key)}
+                      onChange={(event) =>
+                        change(field.key, event.target.value)
+                      }
+                    >
+                      <option value="">선택해 주세요</option>
+                      {field.options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                    {field.help && <small>{field.help}</small>}
+                  </label>
                 ) : (
                   <label className={field.multiline ? 'wide' : ''}>
                     {field.label}

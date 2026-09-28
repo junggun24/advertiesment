@@ -89,6 +89,9 @@ export type CaseStudy = {
   solution?: string;
   result?: string;
   modelName?: string;
+  displayRows?: string | number;
+  displayColumns?: string | number;
+  clientAddress?: string;
   specifications?: string[];
   projectDuration?: string;
   constraints?: string[];
@@ -101,7 +104,7 @@ export const cases: CaseStudy[] = [
     slug: 'public-office-board',
     title: '공공청사 시정 홍보 전자게시판',
     place: '공공청사',
-    purpose: '시정 홍보',
+    purpose: '행정홍보안내',
     productSlug: 'information-led-board',
     summary:
       '청사 방문객과 시민에게 주요 행정 소식과 생활 정보를 전달하는 구성입니다.',
@@ -112,7 +115,7 @@ export const cases: CaseStudy[] = [
     slug: 'safety-information-board',
     title: '안전보건 안내전광판',
     place: '안전 현장',
-    purpose: '안전 안내',
+    purpose: '안전재난관제',
     productSlug: 'information-led-board',
     summary:
       '작업자에게 안전수칙과 현장 정보를 실시간으로 전달하는 구성입니다.',
@@ -123,7 +126,7 @@ export const cases: CaseStudy[] = [
     slug: 'culture-video-wall',
     title: '문화시설 안내 멀티비전',
     place: '문화시설',
-    purpose: '행사 안내',
+    purpose: '교육환경개선',
     productSlug: 'video-wall',
     summary:
       '행사 일정과 시설 안내를 한 화면에서 선명하게 전달하는 구성입니다.',

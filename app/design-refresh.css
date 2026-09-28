@@ -315,6 +315,27 @@ body {
   color: #6b7684;
   line-height: 1.55;
 }
+.design-case-meta {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0;
+}
+.design-case-meta > div {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 8px;
+}
+.design-case-meta dt {
+  color: #8b95a1;
+  font-size: 12px;
+  font-weight: 700;
+}
+.design-case-meta dd {
+  margin: 0;
+  color: #333d4b;
+  font-size: 13px;
+  font-weight: 700;
+}
 .process-section > div {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -158,6 +158,42 @@
   padding: 20px 0 0;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+.case-card-meta {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+}
+.case-card-meta > div {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.case-card-meta dt {
+  color: var(--gray);
+  font-size: 12px;
+  font-weight: 700;
+}
+.case-card-meta dd {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.case-card-meta dd svg {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+}
+.case-purpose {
+  display: inline-flex;
+  width: fit-content;
+  background: #eef2fa;
+  color: var(--navy);
+  padding: 6px 9px;
+  font-size: 12px;
+  font-weight: 800;
+}
 .simulator-page {
   min-height: 100vh;
   background: var(--soft);

@@ -12,6 +12,7 @@ import {
 import { getContentItems, getContentRecords } from '@/lib/content-data';
 import { prepareEditorHtml, resolveContentImage } from '@/lib/editor-content';
 import { PUBLIC_SITE_URL } from '@/lib/content-types';
+import { formatCaseDisplaySize } from '@/lib/case-categories';
 import '../../detail-seo.css';
 
 async function storedCase(slug: string) {
@@ -84,6 +85,8 @@ export default async function CaseDetail({
     ['고객·시설 유형', item.clientType],
     ['설치 지역', item.region],
     ['적용 모델', item.modelName],
+    ['화면 구성', formatCaseDisplaySize(item.displayRows, item.displayColumns)],
+    ['수요기관 도로명', item.clientAddress],
     ['설치 기간', item.projectDuration],
   ].filter((entry): entry is [string, string] => Boolean(entry[1]));
   const sources = safeSources(item.sourceUrls);
@@ -147,7 +150,7 @@ export default async function CaseDetail({
       <section className={item.image ? 'detail-hero has-image' : 'detail-hero'}>
         <div>
           <small>
-            <MapPin /> {item.place}
+            <MapPin /> {item.clientAddress || item.place}
           </small>
           <h1>{item.title}</h1>
           <p>{item.summary}</p>

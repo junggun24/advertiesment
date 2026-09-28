@@ -1283,6 +1283,7 @@ footer small {
   grid-column: 1/-1;
 }
 .content-fields input,
+.content-fields select,
 .content-fields textarea {
   padding: 12px;
   border: 1px solid var(--line);

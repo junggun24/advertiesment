@@ -2,6 +2,7 @@ import { Check, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { products, cases, type Product, type CaseStudy } from '@/lib/catalog';
+import { formatCaseDisplaySize } from '@/lib/case-categories';
 import { InquiryForm } from '@/components/inquiry-form';
 import { getContentItems, mergeBySlug } from '@/lib/content-data';
 import './home.css';
@@ -155,24 +156,41 @@ export default async function Home() {
           <Link href="/cases">더 많은 사례 보기 →</Link>
         </header>
         <div className="design-case-grid">
-          {caseItems.map((item) => (
-            <Link href={`/cases/${item.slug}`} key={item.slug}>
-              {item.image && (
-                <Image
-                  unoptimized
-                  src={item.image}
-                  alt={item.title}
-                  width={1200}
-                  height={750}
-                />
-              )}
-              <small>
-                {item.place} · {item.purpose}
-              </small>
-              <h3>{item.title}</h3>
-              <p>{item.summary}</p>
-            </Link>
-          ))}
+          {caseItems.map((item) => {
+            const displaySize = formatCaseDisplaySize(
+              item.displayRows,
+              item.displayColumns,
+            );
+            return (
+              <Link href={`/cases/${item.slug}`} key={item.slug}>
+                {item.image && (
+                  <Image
+                    unoptimized
+                    src={item.image}
+                    alt={item.title}
+                    width={1200}
+                    height={750}
+                  />
+                )}
+                <h3>{item.title}</h3>
+                <dl className="design-case-meta">
+                  <div>
+                    <dt>모델명</dt>
+                    <dd>{item.modelName || '모델명 미입력'}</dd>
+                  </div>
+                  <div>
+                    <dt>구성</dt>
+                    <dd>{displaySize || '단·열 미입력'}</dd>
+                  </div>
+                  <div>
+                    <dt>수요기관 주소</dt>
+                    <dd>{item.clientAddress || item.place}</dd>
+                  </div>
+                </dl>
+                <small>{item.purpose}</small>
+              </Link>
+            );
+          })}
         </div>
       </section>
       <section className="design-section process-section">

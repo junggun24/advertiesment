@@ -79,3 +79,13 @@
   margin: 0;
   color: var(--navy);
 }
+.case-grid-size-field > span {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+.case-grid-size-field > span b {
+  font-size: 20px;
+  color: var(--navy);
+}

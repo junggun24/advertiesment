@@ -2,6 +2,9 @@ import type { DisplayModel } from './display-models';
 
 const text = (value: unknown) =>
   typeof value === 'string' ? value.trim() : '';
+const filled = (value: unknown) =>
+  (typeof value === 'string' || typeof value === 'number') &&
+  String(value).trim().length > 0;
 const list = (value: unknown) =>
   Array.isArray(value) ? value.filter(Boolean) : [];
 
@@ -35,6 +38,12 @@ export function contentQualityIssues(
       issues.push('작성자와 현장 검수자를 입력해 주세요.');
     if (!list(data.sourceUrls).length)
       issues.push('확인 가능한 근거 자료를 입력해 주세요.');
+    if (!text(data.modelName))
+      issues.push('썸네일에 표시할 모델명을 입력해 주세요.');
+    if (!filled(data.displayRows) || !filled(data.displayColumns))
+      issues.push('썸네일에 표시할 단·열 구성을 입력해 주세요.');
+    if (!text(data.clientAddress))
+      issues.push('도입 수요기관 도로명을 입력해 주세요.');
   }
   if (type === 'faq') {
     if (!text(data.updatedAt)) issues.push('최종 수정일을 입력해 주세요.');

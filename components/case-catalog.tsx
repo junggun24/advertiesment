@@ -4,19 +4,18 @@ import { ArrowRight, MapPin, Search } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { CaseStudy } from '@/lib/catalog';
+import {
+  CASE_PURPOSES,
+  formatCaseDisplaySize,
+  matchesCasePurpose,
+  type CasePurpose,
+} from '@/lib/case-categories';
 
-const filters = [
-  { label: '전체', terms: [] },
-  { label: '홍보·안내', terms: ['홍보', '행사', '안내'] },
-  { label: '시민·현장 안전', terms: ['안전', '재난', '기상'] },
-  { label: '교육·문화기관', terms: ['교육', '학교', '문화'] },
-];
+const filters = ['전체', ...CASE_PURPOSES] as const;
 
 export function CaseCatalog({ items }: { items: CaseStudy[] }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('전체');
-  const selected =
-    filters.find((value) => value.label === filter) ?? filters[0];
   const filtered = useMemo(
     () =>
       items.filter((item) => {
@@ -27,14 +26,16 @@ export function CaseCatalog({ items }: { items: CaseStudy[] }) {
           item.summary,
           item.region,
           item.clientType,
+          item.modelName,
+          item.clientAddress,
         ].join(' ');
         return (
           hay.includes(query) &&
-          (!selected.terms.length ||
-            selected.terms.some((term) => hay.includes(term)))
+          (filter === '전체' ||
+            matchesCasePurpose(item.purpose, filter as CasePurpose))
         );
       }),
-    [query, items, selected],
+    [query, items, filter],
   );
   return (
     <section className="case-browser">
@@ -43,12 +44,12 @@ export function CaseCatalog({ items }: { items: CaseStudy[] }) {
         <p>찾으려는 용도와 가까운 항목을 선택하세요.</p>
         {filters.map((value) => (
           <button
-            key={value.label}
-            className={filter === value.label ? 'active' : ''}
-            onClick={() => setFilter(value.label)}
+            key={value}
+            className={filter === value ? 'active' : ''}
+            onClick={() => setFilter(value)}
           >
-            <span aria-hidden="true">{filter === value.label ? '☑' : '□'}</span>
-            {value.label}
+            <span aria-hidden="true">{filter === value ? '☑' : '□'}</span>
+            {value}
           </button>
         ))}
       </aside>
@@ -62,36 +63,54 @@ export function CaseCatalog({ items }: { items: CaseStudy[] }) {
           />
         </label>
         <section className="catalog-list case-list">
-          {filtered.map((item, index) => (
-            <article key={item.slug}>
-              <Link
-                className="catalog-image-link"
-                href={`/cases/${item.slug}`}
-                aria-label={`${item.title} 구성 보기`}
-              >
-                {item.image && (
-                  <Image
-                    unoptimized
-                    className="catalog-image"
-                    src={item.image}
-                    alt={`${item.title} 설치 구성 예시`}
-                    width={1200}
-                    height={800}
-                  />
-                )}
-                <span>이미지 클릭하여 사례보기</span>
-              </Link>
-              <small>CASE {String(index + 1).padStart(2, '0')}</small>
-              <h2>{item.title}</h2>
-              <p>
-                <MapPin /> {item.place} · {item.purpose}
-              </p>
-              <span>{item.status}</span>
-              <Link href={`/cases/${item.slug}`}>
-                구성 보기 <ArrowRight />
-              </Link>
-            </article>
-          ))}
+          {filtered.map((item) => {
+            const displaySize = formatCaseDisplaySize(
+              item.displayRows,
+              item.displayColumns,
+            );
+            return (
+              <article key={item.slug}>
+                <Link
+                  className="catalog-image-link"
+                  href={`/cases/${item.slug}`}
+                  aria-label={`${item.title} 구성 보기`}
+                >
+                  {item.image && (
+                    <Image
+                      unoptimized
+                      className="catalog-image"
+                      src={item.image}
+                      alt={`${item.title} 설치 구성 예시`}
+                      width={1200}
+                      height={800}
+                    />
+                  )}
+                  <span>이미지 클릭하여 사례보기</span>
+                </Link>
+                <h2>{item.title}</h2>
+                <dl className="case-card-meta">
+                  <div>
+                    <dt>모델명</dt>
+                    <dd>{item.modelName || '모델명 미입력'}</dd>
+                  </div>
+                  <div>
+                    <dt>구성</dt>
+                    <dd>{displaySize || '단·열 미입력'}</dd>
+                  </div>
+                  <div>
+                    <dt>수요기관 주소</dt>
+                    <dd>
+                      <MapPin /> {item.clientAddress || item.place}
+                    </dd>
+                  </div>
+                </dl>
+                <span className="case-purpose">{item.purpose}</span>
+                <Link href={`/cases/${item.slug}`}>
+                  구성 보기 <ArrowRight />
+                </Link>
+              </article>
+            );
+          })}
         </section>
         {!filtered.length && (
           <p className="empty">
