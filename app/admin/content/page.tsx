@@ -14,6 +14,7 @@ import {
 import type { ContentItem, ContentType } from '@/lib/content-types';
 import type { DisplayModel } from '@/lib/display-models';
 import { RichTextEditor } from '@/components/rich-text-editor';
+import { Toaster, toast } from '@/components/ui/toast';
 import { extractFirstImage } from '@/lib/editor-content';
 import { contentQualityIssues } from '@/lib/content-quality';
 import { optimizeImageForUpload } from '@/lib/client-image';
@@ -269,6 +270,7 @@ export default function ContentAdminPage() {
   const [selected, setSelected] = useState<ContentItem>(empty('product'));
   const [models, setModels] = useState<DisplayModel[]>([]);
   const [notice, setNotice] = useState('');
+  const [saving, setSaving] = useState(false);
   const visible = useMemo(
     () => items.filter((item) => item.type === type),
     [items, type],
@@ -340,6 +342,7 @@ export default function ContentAdminPage() {
   async function save(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
     setNotice('저장 중...');
+    setSaving(true);
     const candidates = [
       selected.data.name,
       selected.data.title,
@@ -356,23 +359,59 @@ export default function ContentAdminPage() {
       title,
       data: { ...selected.data, slug: selected.slug },
     };
-    const response = await fetch(
-      selected.id ? `/api/content/${selected.id}` : '/api/content',
-      {
-        method: selected.id ? 'PUT' : 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload),
-      },
-    );
-    const result = (await response.json()) as ContentItem & {
-      message?: string;
-    };
-    if (!response.ok) {
-      setNotice(result.message ?? '저장하지 못했습니다.');
-      return;
+    try {
+      const response = await fetch(
+        selected.id ? `/api/content/${selected.id}` : '/api/content',
+        {
+          method: selected.id ? 'PUT' : 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+      );
+      const result = (await response.json()) as ContentItem & {
+        message?: string;
+      };
+      if (!response.ok) {
+        const message = result.message ?? '저장하지 못했습니다.';
+        setNotice(message);
+        toast.add({
+          title: `${labels[type]} 저장 실패`,
+          description: message,
+          type: 'error',
+          priority: 'high',
+        });
+        return;
+      }
+      const message = '저장되었습니다. 공개 페이지와 사이트맵에 반영됩니다.';
+      setNotice(message);
+      await load(result.id);
+      toast.add({
+        title: `${labels[type]} 저장 완료`,
+        description: payload.published
+          ? '사이트에 공개 상태로 저장되었습니다.'
+          : '비공개 상태로 저장되었습니다.',
+        type: 'success',
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : '저장하지 못했습니다.';
+      setNotice(message);
+      toast.add({
+        title: `${labels[type]} 저장 실패`,
+        description: message,
+        type: 'error',
+        priority: 'high',
+      });
+    } finally {
+      setSaving(false);
     }
-    setNotice('저장되었습니다. 공개 페이지와 사이트맵에 반영됩니다.');
-    await load(result.id);
+  }
+  function cancelEditing() {
+    const saved = selected.id
+      ? items.find((item) => item.id === selected.id)
+      : undefined;
+    setSelected(saved ?? empty(type));
+    setNotice('');
   }
   async function remove() {
     if (!selected.id || !confirm(`“${selected.title}” 콘텐츠를 삭제할까요?`))
@@ -446,9 +485,9 @@ export default function ContentAdminPage() {
                 <Trash2 />
                 삭제
               </button>
-              <button>
+              <button disabled={saving}>
                 <Save />
-                저장
+                {saving ? '저장 중...' : '저장'}
               </button>
             </span>
           </div>
@@ -619,8 +658,24 @@ export default function ContentAdminPage() {
             </label>
           </div>
           {notice && <p className="admin-notice">{notice}</p>}
+          <div className="content-editor-actions">
+            <button
+              type="button"
+              className="secondary"
+              disabled={saving}
+              onClick={cancelEditing}
+            >
+              <X />
+              취소
+            </button>
+            <button type="submit" disabled={saving}>
+              <Save />
+              {saving ? '저장 중...' : '저장'}
+            </button>
+          </div>
         </form>
       </section>
+      <Toaster />
     </main>
   );
 }

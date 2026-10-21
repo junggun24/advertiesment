@@ -1245,11 +1245,13 @@ footer small {
   margin: 5px 0 0;
 }
 .content-editor-head > span,
+.content-editor-actions,
 .admin-detail-actions {
   display: flex;
   gap: 8px;
 }
 .content-editor-head button,
+.content-editor-actions button,
 .admin-detail-actions button {
   display: flex;
   align-items: center;
@@ -1263,8 +1265,20 @@ footer small {
 .admin-detail-actions button.danger {
   background: #a6352c;
 }
-.content-editor-head button:disabled {
+.content-editor-head button:disabled,
+.content-editor-actions button:disabled {
   opacity: 0.4;
+}
+.content-editor-actions {
+  justify-content: flex-end;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  margin-top: 24px;
+}
+.content-editor-actions button.secondary {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--navy);
 }
 .content-fields {
   display: grid;
