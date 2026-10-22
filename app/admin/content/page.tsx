@@ -254,6 +254,22 @@ const fields: Record<EditableType, Field[]> = {
   ],
 };
 
+function normalizeListFields(
+  type: EditableType,
+  data: Record<string, unknown>,
+) {
+  const normalized = { ...data };
+  for (const field of fields[type]) {
+    const fieldValue = normalized[field.key];
+    if (!field.list || typeof fieldValue !== 'string') continue;
+    normalized[field.key] = fieldValue
+      .split('\n')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return normalized;
+}
+
 const empty = (type: EditableType): ContentItem => ({
   id: 0,
   type,
@@ -325,17 +341,12 @@ export default function ContentAdminPage() {
       ? String(raw)
       : '';
   }
-  function change(key: string, next: string, list?: boolean) {
+  function change(key: string, next: string) {
     setSelected({
       ...selected,
       data: {
         ...selected.data,
-        [key]: list
-          ? next
-              .split('\n')
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : next,
+        [key]: next,
       },
     });
   }
@@ -354,10 +365,11 @@ export default function ContentAdminPage() {
         (candidate): candidate is string =>
           typeof candidate === 'string' && candidate.length > 0,
       ) ?? selected.title;
+    const normalizedData = normalizeListFields(type, selected.data);
     const payload = {
       ...selected,
       title,
-      data: { ...selected.data, slug: selected.slug },
+      data: { ...normalizedData, slug: selected.slug },
     };
     try {
       const response = await fetch(
@@ -421,7 +433,10 @@ export default function ContentAdminPage() {
     await load();
   }
   const automaticThumbnail = extractFirstImage(value('body')) || value('image');
-  const qualityIssues = contentQualityIssues(type, selected.data);
+  const qualityIssues = contentQualityIssues(
+    type,
+    normalizeListFields(type, selected.data),
+  );
   const selectedModelIds = Array.isArray(selected.data.modelIds)
     ? selected.data.modelIds.map(Number).filter(Number.isInteger)
     : [];
@@ -628,7 +643,7 @@ export default function ContentAdminPage() {
                         required={field.required}
                         value={value(field.key, field.list)}
                         onChange={(event) =>
-                          change(field.key, event.target.value, field.list)
+                          change(field.key, event.target.value)
                         }
                       />
                     ) : (
