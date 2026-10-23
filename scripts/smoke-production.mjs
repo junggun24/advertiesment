@@ -1,5 +1,5 @@
 const origin =
-  process.env.PRODUCTION_ORIGIN || 'https://display.dsko.co.kr';
+  process.env.PRODUCTION_ORIGIN || 'https://dsko.co.kr';
 
 async function check(path, validate) {
   const response = await fetch(`${origin}${path}`, {
@@ -37,7 +37,7 @@ results.health = await check('/api/health', async (response) => {
 results.robots = await check('/robots.txt');
 results.sitemap = await check('/sitemap.xml', async (response) => {
   const xml = await response.text();
-  if (!xml.includes('https://display.dsko.co.kr/') || xml.includes('workers.dev')) {
+  if (!xml.includes('https://dsko.co.kr/') || xml.includes('workers.dev')) {
     throw new Error('사이트맵 주소가 운영 도메인과 일치하지 않습니다.');
   }
 });

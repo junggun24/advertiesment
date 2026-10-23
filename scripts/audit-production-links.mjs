@@ -1,4 +1,4 @@
-const origin = 'https://display.dsko.co.kr';
+const origin = 'https://dsko.co.kr';
 const sitemapUrl = `${origin}/sitemap.xml`;
 
 async function get(url) {

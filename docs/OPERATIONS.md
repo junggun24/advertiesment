@@ -25,7 +25,7 @@ Turnstile 위젯 자동 발급에는 Cloudflare API 토큰의 `challenge-widgets
 - Turnstile 키를 만들기 전에도 요청 제한은 항상 적용되며, 키가 없으면 `security.turnstile_not_configured` 경고를 남긴다.
 - Cloudflare `dsko.co.kr` 영역은 최소 TLS 1.2, HTTPS 강제 전환, HSTS 1개월(`includeSubDomains`와 preload 제외)을 사용한다.
 - Cloudflare 응답 헤더 규칙 `DSKO security response headers`가 `X-Frame-Options`, `Content-Security-Policy`의 `frame-ancestors`, `Referrer-Policy`를 설정한다. Cloudflare Edge Certificates에서 `X-Content-Type-Options: nosniff`도 설정한다.
-- Worker의 `workers.dev` 및 미리보기 URL은 배포 설정에서 비활성화한다. 공식 주소는 `https://display.dsko.co.kr`이다.
+- Worker의 `workers.dev` 및 미리보기 URL은 배포 설정에서 비활성화한다. 공식 주소는 `https://dsko.co.kr`이며 `display.dsko.co.kr`과 `www.dsko.co.kr`은 공식 주소로 영구 리다이렉트한다.
 
 ## 모니터링
 
