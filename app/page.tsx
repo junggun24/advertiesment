@@ -21,6 +21,7 @@ export default async function Home() {
     cases,
     await getContentItems<CaseStudy>('case'),
   );
+  const featuredCaseItems = caseItems.slice(0, 9);
   return (
     <main className="design-home">
       <section className="design-hero">
@@ -153,10 +154,9 @@ export default async function Home() {
       <section className="design-section">
         <header className="split-head">
           <h2>설치 사례</h2>
-          <Link href="/cases">더 많은 사례 보기 →</Link>
         </header>
         <div className="design-case-grid">
-          {caseItems.map((item) => {
+          {featuredCaseItems.map((item) => {
             const displaySize = formatCaseDisplaySize(
               item.displayRows,
               item.displayColumns,
@@ -191,6 +191,9 @@ export default async function Home() {
               </Link>
             );
           })}
+        </div>
+        <div className="design-case-more">
+          <Link href="/cases">전체 설치사례 {caseItems.length}건 보기 →</Link>
         </div>
       </section>
       <section className="design-section process-section">

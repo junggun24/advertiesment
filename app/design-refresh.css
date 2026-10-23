@@ -336,6 +336,28 @@ body {
   font-size: 13px;
   font-weight: 700;
 }
+.design-case-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+.design-case-more a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 28px;
+  border: 1px solid #dfe4e8;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--navy);
+  font-size: 17px;
+  font-weight: 700;
+}
+.design-case-more a:hover {
+  border-color: var(--navy);
+  background: #f7f8fa;
+}
 .process-section > div {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -792,6 +814,9 @@ body {
   .design-quote,
   .sector-row {
     grid-template-columns: 1fr;
+  }
+  .design-case-more a {
+    width: 100%;
   }
   .task-section a {
     padding: 30px 24px;
