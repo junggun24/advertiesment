@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {
   ArrowRight,
   FilePenLine,
+  ClipboardList,
   Link2,
   LogOut,
   MessageSquareText,
@@ -12,6 +13,12 @@ import {
 } from 'lucide-react';
 import './dashboard.css';
 const cards = [
+  {
+    href: '/admin/requirements',
+    icon: ClipboardList,
+    title: '요구사항',
+    text: '프로젝트 요청과 진행 상태, 기획 자료와 첨부파일을 관리합니다.',
+  },
   {
     href: '/admin/inquiries',
     icon: MessageSquareText,
