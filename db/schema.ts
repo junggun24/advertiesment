@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS inquiries (
   name TEXT NOT NULL,
   organization TEXT NOT NULL,
   contact TEXT NOT NULL,
+  inquiry_category TEXT NOT NULL DEFAULT '',
   message TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'new',
   assignee TEXT NOT NULL DEFAULT '',
@@ -43,6 +44,11 @@ CREATE TABLE IF NOT EXISTS inquiries (
 export const createInquiryStatusIndex = `
 CREATE INDEX IF NOT EXISTS idx_inquiries_status_created
 ON inquiries(status, created_at)
+`;
+
+export const createInquiryCategoryIndex = `
+CREATE INDEX IF NOT EXISTS idx_inquiries_category_created
+ON inquiries(inquiry_category, created_at)
 `;
 
 export const createContentItemsTable = `

@@ -11,6 +11,18 @@ async function check(path, validate) {
   return response.status;
 }
 
+function assertMetadata(html, path, title) {
+  const canonical = `${origin}${path}`;
+  if (
+    !html.includes(`<title>${title} | 오아이씨코리아</title>`) ||
+    !html.includes(`<meta property="og:title" content="${title}">`) ||
+    !html.includes(`<link rel="canonical" href="${canonical}">`) ||
+    !html.includes('href="/favicon.svg"')
+  ) {
+    throw new Error(`${path}: 메타데이터 또는 favicon이 올바르지 않습니다.`);
+  }
+}
+
 const results = {};
 results.home = await check('/', async (response) => {
   const headers = response.headers;
@@ -42,10 +54,27 @@ results.sitemap = await check('/sitemap.xml', async (response) => {
   }
 });
 results.adminLogin = await check('/admin/login');
+for (const [key, path, title] of [
+  [
+    'products',
+    '/products',
+    '안내전광판·멀티비전·옥외 키오스크 제품',
+  ],
+  ['cases', '/cases', '안내전광판·멀티비전 설치 사례'],
+  ['info', '/info', '안내전광판 가격·설치·나라장터 정보'],
+]) {
+  results[key] = await check(path, async (response) => {
+    assertMetadata(await response.text(), path, title);
+  });
+}
 results.simulator = await check('/simulator', async (response) => {
   const html = await response.text();
-  if (!html.includes('조달 디스플레이 사양·가격 계산기')) {
-    throw new Error('사양 계산기 페이지 내용이 올바르지 않습니다.');
+  if (
+    !html.includes('<h1') ||
+    !html.includes('설치 공간에 맞는') ||
+    !html.includes('조달등록가격')
+  ) {
+    throw new Error('사양 계산기의 서버 렌더링 본문이 올바르지 않습니다.');
   }
 });
 results.models = await check('/api/models', async (response) => {

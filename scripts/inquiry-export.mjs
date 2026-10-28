@@ -1,6 +1,8 @@
 import ExcelJS from 'exceljs';
+import { inquiryCategories } from '../lib/inquiry-categories.ts';
 
 const sourceTypes = ['Ads', 'Organic', 'Direct', 'Referral', 'Unknown'];
+const categoryLabels = [...inquiryCategories, '미분류'];
 const sourceLabels = {
   Ads: '광고',
   Organic: '자연검색',
@@ -94,6 +96,7 @@ function addSummary(workbook, name, rows, periodKey) {
   sheet.addRow([
     '기간',
     '전체 문의',
+    ...categoryLabels,
     ...sourceTypes.map((type) => sourceLabels[type]),
     '재방문 문의',
     '수집 점검 필요',
@@ -104,6 +107,14 @@ function addSummary(workbook, name, rows, periodKey) {
     sheet.addRow([
       period,
       values.length,
+      ...categoryLabels.map(
+        (category) =>
+          values.filter((row) =>
+            category === '미분류'
+              ? !row.inquiry_category
+              : row.inquiry_category === category,
+          ).length,
+      ),
       ...sourceTypes.map(
         (type) =>
           values.filter((row) => (row.source_type || 'Unknown') === type)
@@ -113,7 +124,7 @@ function addSummary(workbook, name, rows, periodKey) {
       values.filter((row) => row.quality_flags?.length).length,
     ]);
   }
-  finishSheet(sheet, [16, 14, 14, 14, 14, 14, 14, 16, 18]);
+  finishSheet(sheet, [16, 14, 18, 18, 18, 14, 14, 14, 14, 14, 14, 16, 18]);
 }
 
 export async function buildInquiryWorkbook(rows) {
@@ -136,6 +147,7 @@ export async function buildInquiryWorkbook(rows) {
     '성함',
     '연락처',
     '회사·기관',
+    '문의 카테고리',
     '최초 구분',
     '최초 매체',
     '최초 캠페인',
@@ -177,6 +189,7 @@ export async function buildInquiryWorkbook(rows) {
       row.name,
       row.contact,
       row.organization,
+      row.inquiry_category || '미분류',
       sourceLabels[row.source_type] || '확인 불가',
       row.source_name,
       row.campaign,
@@ -212,8 +225,9 @@ export async function buildInquiryWorkbook(rows) {
   finishSheet(
     raw,
     [
-      16, 12, 12, 12, 18, 22, 12, 22, 24, 22, 22, 22, 34, 12, 22, 24, 22, 22,
-      22, 34, 28, 16, 12, 12, 16, 10, 12, 12, 40, 14, 18, 24, 36, 34, 55, 55,
+      16, 12, 12, 12, 18, 22, 18, 12, 22, 24, 22, 22, 22, 34, 12, 22, 24, 22,
+      22, 22, 34, 28, 16, 12, 12, 16, 10, 12, 12, 40, 14, 18, 24, 36, 34, 55,
+      55,
     ],
   );
 
@@ -229,6 +243,7 @@ export async function buildInquiryWorkbook(rows) {
     '시간',
     '성함',
     '회사·기관',
+    '문의 카테고리',
     '최초 유입',
     '최초 상세경로',
     '최초 캠페인',
@@ -255,6 +270,7 @@ export async function buildInquiryWorkbook(rows) {
       d.toLocaleTimeString('ko-KR', { hour12: false }),
       row.name,
       row.organization,
+      row.inquiry_category || '미분류',
       sourceLabels[row.source_type] || '확인 불가',
       row.source_name,
       row.campaign,
@@ -273,8 +289,8 @@ export async function buildInquiryWorkbook(rows) {
   finishSheet(
     data,
     [
-      10, 8, 12, 12, 8, 12, 12, 22, 13, 24, 24, 13, 24, 24, 34, 28, 12, 12, 10,
-      12, 12,
+      10, 8, 12, 12, 8, 12, 12, 22, 18, 13, 24, 24, 13, 24, 24, 34, 28, 12, 12,
+      10, 12, 12,
     ],
   );
 
@@ -292,6 +308,10 @@ export async function buildInquiryWorkbook(rows) {
     ['Direct', '직접 유입', '이전 주소와 캠페인 정보가 없는 경우'],
     ['Referral', '다른 사이트', '검색 외 외부 사이트나 UTM 출처로 들어온 경우'],
     ['Unknown', '확인 불가', '기존 데이터처럼 유입 정보가 저장되지 않은 경우'],
+    ['문의 카테고리', '행정홍보안내', '행정·홍보 목적의 안내 디스플레이 문의'],
+    ['문의 카테고리', '교육환경개선', '교육시설 환경 개선 목적의 문의'],
+    ['문의 카테고리', '안전재난관제', '안전·재난·관제 목적의 문의'],
+    ['문의 카테고리', '미분류', '카테고리 도입 전에 접수된 기존 문의'],
     ['utm_source', '매체', 'google, naver, newsletter처럼 유입을 보낸 곳'],
     ['utm_medium', '방식', 'cpc, organic, email처럼 유입 방식'],
     ['utm_campaign', '캠페인', '광고 또는 홍보 캠페인 이름'],

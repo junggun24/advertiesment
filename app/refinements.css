@@ -413,6 +413,10 @@
   gap: 13px;
   align-items: center;
 }
+.static-contacts {
+  display: grid;
+  gap: 16px;
+}
 .static-phone > svg {
   width: 23px;
 }
@@ -425,6 +429,9 @@
 }
 .static-phone strong {
   font-size: 22px;
+}
+.static-contacts .static-phone:last-child strong {
+  font-size: 17px;
 }
 .inquiry-top .quote-form {
   border-radius: 15px;

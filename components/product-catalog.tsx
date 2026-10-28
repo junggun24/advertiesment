@@ -1,8 +1,8 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { ArrowRight, Search } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
+import { ResponsiveImage } from '@/components/responsive-image';
 import type { Product } from '@/lib/catalog';
 
 export function ProductCatalog({ items }: { items: Product[] }) {
@@ -55,13 +55,13 @@ export function ProductCatalog({ items }: { items: Product[] }) {
               aria-label={`${product.name} 상세 정보 보기`}
             >
               {product.image && (
-                <Image
-                  unoptimized
+                <ResponsiveImage
                   className="catalog-image"
                   src={product.image}
                   alt={`${product.name} 제품 이미지`}
                   width={1200}
                   height={800}
+                  sizes="(max-width: 800px) 100vw, 33vw"
                 />
               )}
               <span>이미지 클릭하여 상세보기</span>

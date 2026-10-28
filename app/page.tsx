@@ -1,10 +1,12 @@
-import { Check, Phone } from 'lucide-react';
-import Image from 'next/image';
+import { Check, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { products, cases, type Product, type CaseStudy } from '@/lib/catalog';
 import { formatCaseDisplaySize } from '@/lib/case-categories';
+import { HomeHeroCarousel } from '@/components/home-hero-carousel';
 import { InquiryForm } from '@/components/inquiry-form';
+import { ResponsiveImage } from '@/components/responsive-image';
 import { getContentItems, mergeBySlug } from '@/lib/content-data';
+import { getSiteSettings } from '@/lib/site-settings-data';
 import './home.css';
 const steps = [
   ['상담 접수', '장소와 목적, 일정과 예산을 확인합니다.'],
@@ -13,21 +15,20 @@ const steps = [
   ['제작·설치', '제작, 현장 설치와 운영 안내까지 진행합니다.'],
 ];
 export default async function Home() {
-  const catalog = mergeBySlug(
-    products,
-    await getContentItems<Product>('product'),
-  );
-  const caseItems = mergeBySlug(
-    cases,
-    await getContentItems<CaseStudy>('case'),
-  );
+  const [savedProducts, savedCases, site] = await Promise.all([
+    getContentItems<Product>('product'),
+    getContentItems<CaseStudy>('case'),
+    getSiteSettings(),
+  ]);
+  const catalog = mergeBySlug(products, savedProducts);
+  const caseItems = mergeBySlug(cases, savedCases);
   const featuredCaseItems = caseItems.slice(0, 9);
   return (
     <main className="design-home">
       <section className="design-hero">
         <div>
           <div className="hero-tags">
-            <span>자체 연구소 · 제조시설 보유</span>
+            <span>자체 사옥 · 제조설비 · 연구소 보유</span>
             <span>인천 본사 · 전국 설치</span>
           </div>
           <h1>
@@ -51,17 +52,7 @@ export default async function Home() {
             </Link>
           </div>
         </div>
-        <figure>
-          <Image
-            unoptimized
-            src="/oic/prod-notice.jpg"
-            alt="오아이씨코리아 안내전광판"
-            width={600}
-            height={400}
-            priority
-          />
-          <figcaption>안내전광판 — 나라장터 쇼핑몰 등록 제품</figcaption>
-        </figure>
+        <HomeHeroCarousel />
       </section>
       <section className="proof-strip">
         <div>
@@ -93,12 +84,12 @@ export default async function Home() {
           {catalog.map((product) => (
             <Link href={`/products/${product.slug}`} key={product.slug}>
               {product.image && (
-                <Image
-                  unoptimized
+                <ResponsiveImage
                   src={product.image}
                   alt={product.name}
                   width={1200}
                   height={800}
+                  sizes="(max-width: 800px) 100vw, 33vw"
                 />
               )}
               <div>
@@ -164,12 +155,12 @@ export default async function Home() {
             return (
               <Link href={`/cases/${item.slug}`} key={item.slug}>
                 {item.image && (
-                  <Image
-                    unoptimized
+                  <ResponsiveImage
                     src={item.image}
                     alt={item.title}
                     width={1200}
                     height={750}
+                    sizes="(max-width: 800px) 100vw, 33vw"
                   />
                 )}
                 <h3>{item.title}</h3>
@@ -216,8 +207,8 @@ export default async function Home() {
           <p className="eyebrow light">PRODUCT & PROJECT INQUIRY</p>
           <h2>제품 · 견적 문의</h2>
           <p>
-            정확한 제품명을 몰라도 됩니다. 장소와 목적을 남기면 신재훈 과장이
-            확인합니다.
+            정확한 제품명을 몰라도 됩니다. 장소와 목적을 남기면{' '}
+            {site.consultantName}이 확인합니다.
           </p>
           <ul>
             <li>
@@ -233,10 +224,22 @@ export default async function Home() {
               현장 실사 여부 확인
             </li>
           </ul>
-          <a href="tel:0327197947">
-            <Phone />
-            032-719-7947
-          </a>
+          <div className="design-quote-contacts">
+            <a
+              className="design-quote-contact"
+              href={`tel:${site.consultantPhone.replace(/[^\d+]/g, '')}`}
+            >
+              <Phone />
+              {site.consultantPhone}
+            </a>
+            <a
+              className="design-quote-contact"
+              href={`mailto:${site.consultantEmail}`}
+            >
+              <Mail />
+              {site.consultantEmail}
+            </a>
+          </div>
         </div>
         <InquiryForm compact />
       </section>

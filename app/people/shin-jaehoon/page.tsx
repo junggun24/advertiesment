@@ -1,5 +1,5 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import {
   ArrowRight,
   ClipboardCheck,
@@ -7,54 +7,91 @@ import {
   Phone,
   UserRound,
 } from 'lucide-react';
+import { ResponsiveImage } from '@/components/responsive-image';
+import { PUBLIC_SITE_URL } from '@/lib/content-types';
+import { pageMetadata } from '@/lib/seo-metadata';
+import { getSiteSettings } from '@/lib/site-settings-data';
 
-export const metadata: Metadata = {
-  title: '신재훈 제품·견적 상담 담당자',
-  description:
-    '오아이씨코리아 신재훈 과장이 디스플레이 제품 선택, 현장 확인과 견적 상담을 진행하는 방식을 소개합니다.',
-  alternates: { canonical: '/people/shin-jaehoon' },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getSiteSettings();
+  return pageMetadata({
+    title: `${profile.consultantName} 제품·견적 상담 담당자`,
+    description: profile.consultantIntroduction,
+    path: '/people/shin-jaehoon',
+    image: profile.consultantImage || undefined,
+  });
+}
 
-export default function ProfilePage() {
+function personName(value: string) {
+  return (
+    value
+      .replace(/\s+(사원|주임|대리|과장|차장|부장|이사|대표)(님)?$/u, '')
+      .trim() || value
+  );
+}
+
+export default async function ProfilePage() {
+  const profile = await getSiteSettings();
+  const telephone = profile.consultantPhone.replace(/[^\d+]/g, '');
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: '신재훈',
-    jobTitle: '영업팀 과장',
+    name: personName(profile.consultantName),
+    jobTitle: `${profile.consultantDepartment} · ${profile.consultantRole}`,
     worksFor: { '@type': 'Organization', name: '주식회사 오아이씨코리아' },
-    email: 'sales@oickorea.com',
-    telephone: '+82-32-719-7947',
+    email: profile.consultantEmail,
+    telephone: profile.consultantPhone,
+    description: profile.consultantIntroduction,
+    ...(profile.consultantImage
+      ? {
+          image: new URL(profile.consultantImage, PUBLIC_SITE_URL).toString(),
+        }
+      : {}),
   };
   return (
     <main className="content-page">
       <section className="profile-hero">
         <div>
           <p className="eyebrow light">DISPLAY CONSULTANT</p>
-          <h1>신재훈 과장</h1>
-          <strong>오아이씨코리아 영업팀 · 제품 및 견적 상담</strong>
-          <p>
-            제품명을 정하기 전부터 상담할 수 있습니다. 설치 장소와 전달할 정보를
-            기준으로 확인해야 할 조건을 정리하고, 제작·설치 담당자에게 이어질 수
-            있는 견적 요청서로 구체화합니다.
-          </p>
+          <h1>{profile.consultantName}</h1>
+          <strong>
+            {profile.consultantDepartment} · {profile.consultantRole}
+          </strong>
+          <p>{profile.consultantIntroduction}</p>
         </div>
         <aside className="profile-contact">
-          <figure
-            className="profile-photo-placeholder"
-            aria-label="신재훈 과장 프로필 사진 준비 중"
-          >
-            <UserRound />
-            <span>신재훈 과장</span>
-          </figure>
+          {profile.consultantImage ? (
+            <ResponsiveImage
+              src={profile.consultantImage}
+              alt={`${profile.consultantName} 프로필 사진`}
+              width={720}
+              height={960}
+              sizes="220px"
+              className="profile-photo"
+              priority
+            />
+          ) : (
+            <figure
+              className="profile-photo-placeholder"
+              aria-label={`${profile.consultantName} 프로필 사진 준비 중`}
+            >
+              <UserRound />
+              <span>{profile.consultantName}</span>
+            </figure>
+          )}
           <small>CONTACT</small>
-          <a href="tel:032-719-7947">
+          <a href={`tel:${telephone}`}>
             <Phone />
-            032-719-7947
+            {profile.consultantPhone}
           </a>
-          <a href="mailto:sales@oickorea.com">
+          <a
+            className="profile-email"
+            href={`mailto:${profile.consultantEmail}`}
+          >
             <Mail />
-            sales@oickorea.com
+            {profile.consultantEmail}
           </a>
+          <span className="profile-hours">{profile.consultantHours}</span>
         </aside>
       </section>
       <section className="profile-work">
@@ -96,7 +133,7 @@ export default function ProfilePage() {
           </p>
         </div>
         <Link href="/inquiry">
-          신재훈 담당자에게 문의 <ArrowRight />
+          {personName(profile.consultantName)} 담당자에게 문의 <ArrowRight />
         </Link>
       </section>
       <script

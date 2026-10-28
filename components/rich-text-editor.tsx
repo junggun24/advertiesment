@@ -12,7 +12,7 @@ import {
   List,
   ListOrdered,
 } from 'lucide-react';
-import { optimizeImageForUpload } from '@/lib/client-image';
+import { imageUploadFormData, prepareImageUpload } from '@/lib/client-image';
 
 export function RichTextEditor({
   value,
@@ -84,15 +84,15 @@ export function RichTextEditor({
         '검색과 접근성을 위한 이미지 설명을 입력해 주세요.',
         suggested,
       )?.trim() ?? '';
-    const optimized = await optimizeImageForUpload(file);
-    const form = new FormData();
-    form.set('file', optimized);
+    const prepared = await prepareImageUpload(file);
+    const form = imageUploadFormData(prepared);
     const response = await fetch('/api/uploads', {
       method: 'POST',
       body: form,
     });
     const result = (await response.json()) as {
       url?: string;
+      variant_widths?: number[];
       message?: string;
     };
     if (!response.ok || !result.url)
@@ -109,7 +109,10 @@ export function RichTextEditor({
       `<img src="${escape(result.url)}" alt="${escape(alternative)}"><p><br></p>`,
     );
     onChange(editor.current?.innerHTML ?? '');
-    return Boolean(alternative);
+    return {
+      described: Boolean(alternative),
+      variants: result.variant_widths?.length ?? 0,
+    };
   }
   async function upload(files?: FileList | File[]) {
     if (!files?.length || uploading) return;
@@ -128,14 +131,17 @@ export function RichTextEditor({
     );
     let uploaded = 0;
     let described = 0;
+    let variants = 0;
     try {
       for (const file of images) {
-        if (await uploadOne(file)) described += 1;
+        const result = await uploadOne(file);
+        if (result.described) described += 1;
+        variants += result.variants;
         uploaded += 1;
       }
       const ignored = Array.from(files).length - images.length;
       setMessage(
-        `${uploaded}개 이미지가 삽입되었습니다.${described < uploaded ? ' 공개 전 이미지 설명을 확인해 주세요.' : ''}${ignored ? ` 이미지가 아닌 ${ignored}개 파일은 제외했습니다.` : ''}`,
+        `${uploaded}개 이미지와 반응형 변형 ${variants}개가 저장되었습니다.${described < uploaded ? ' 공개 전 이미지 설명을 확인해 주세요.' : ''}${ignored ? ` 이미지가 아닌 ${ignored}개 파일은 제외했습니다.` : ''}`,
       );
     } catch (error) {
       setMessage(

@@ -1,16 +1,19 @@
-import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Building2, Check, MapPin, Wrench } from 'lucide-react';
+import { pageMetadata } from '@/lib/seo-metadata';
+import { getSiteSettings } from '@/lib/site-settings-data';
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: '회사소개',
   description:
     '인천 사옥을 기반으로 공공 안내전광판, 멀티비전, 옥외용 키오스크를 기획·제작·설치하는 오아이씨코리아를 소개합니다.',
-  alternates: { canonical: '/about' },
-};
+  path: '/about',
+  image: '/oic/company-building.jpg',
+});
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const site = await getSiteSettings();
   return (
     <main className="content-page">
       <section className="content-hero about-building-hero">
@@ -99,8 +102,8 @@ export default function AboutPage() {
             </dd>
           </div>
           <div>
-            <dt>대표전화</dt>
-            <dd>032-719-7947</dd>
+            <dt>제품·견적 상담</dt>
+            <dd>{site.consultantPhone}</dd>
           </div>
           <div>
             <dt>팩스</dt>
@@ -108,7 +111,11 @@ export default function AboutPage() {
           </div>
           <div>
             <dt>이메일</dt>
-            <dd>sales@oickorea.com</dd>
+            <dd>
+              <a href={`mailto:${site.consultantEmail}`}>
+                {site.consultantEmail}
+              </a>
+            </dd>
           </div>
           <div>
             <dt>사업자등록번호</dt>
@@ -126,7 +133,7 @@ export default function AboutPage() {
           <p>문의 전에 담당자의 역할과 상담 진행 방식을 확인할 수 있습니다.</p>
         </div>
         <Link href="/people/shin-jaehoon">
-          신재훈 담당자 소개 <ArrowRight />
+          {site.consultantName} 소개 <ArrowRight />
         </Link>
       </section>
     </main>

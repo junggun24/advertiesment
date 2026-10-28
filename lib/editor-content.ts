@@ -1,3 +1,5 @@
+import { responsiveImageSrcSet } from './responsive-images.ts';
+
 type ImageContent = { thumbnail?: unknown; body?: unknown; image?: unknown };
 export function extractFirstImage(html?: string) {
   const src = html
@@ -22,9 +24,18 @@ export function prepareEditorHtml(value?: string) {
       const decoding = /\bdecoding\s*=/i.test(attributes)
         ? ''
         : ' decoding="async"';
-      return `<img${loading}${decoding}${attributes}>`;
+      const source = attributes.match(/\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+      const srcSet = source ? responsiveImageSrcSet(source) : '';
+      const responsive =
+        srcSet && !/\bsrcset\s*=/i.test(attributes)
+          ? ` srcset="${escapeAttribute(srcSet)}"${/\bsizes\s*=/i.test(attributes) ? '' : ' sizes="(max-width: 800px) 100vw, 800px"'}`
+          : '';
+      return `<img${loading}${decoding}${responsive}${attributes}>`;
     },
   );
+}
+function escapeAttribute(value: string) {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 function safeImage(value?: unknown) {
   const normalized = typeof value === 'string' ? value.trim() : '';

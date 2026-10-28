@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Paperclip } from 'lucide-react';
 import './inquiry-files.css';
+import { inquiryCategories } from '@/lib/inquiry-categories';
 import { currentAttribution, trackInquiryEvent } from './attribution-tracker';
 import { TurnstileWidget } from './turnstile-widget';
 
@@ -72,6 +73,19 @@ export function InquiryForm({ compact = false }: { compact?: boolean }) {
       <label>
         연락처
         <input name="contact" required placeholder="전화번호 또는 이메일" />
+      </label>
+      <label>
+        문의 카테고리
+        <select name="inquiryCategory" required defaultValue="">
+          <option value="" disabled>
+            문의 목적을 선택해 주세요
+          </option>
+          {inquiryCategories.map((category) => (
+            <option value={category} key={category}>
+              {category}
+            </option>
+          ))}
+        </select>
       </label>
       <label>
         문의 내용

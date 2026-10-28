@@ -127,35 +127,129 @@ body {
 .design-actions {
   display: flex;
   gap: 12px;
+  align-items: stretch;
 }
 .design-actions a {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 60px;
   padding: 18px 36px;
   border-radius: 14px;
   font-size: 18px;
   font-weight: 700;
+  line-height: 1.2;
+}
+.design-actions .red-button {
+  padding: 18px 36px !important;
 }
 .soft-button {
-  background: #f2f4f6;
+  border: 1px solid #dce1e7;
+  background: linear-gradient(180deg, #fff, #eef1f4);
   color: var(--navy);
+  box-shadow:
+    0 7px 14px #101a331a,
+    inset 0 1px 0 #fff;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
-.design-hero figure {
+.soft-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 10px 20px #101a3324,
+    inset 0 1px 0 #fff;
+}
+.soft-button:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 3px 7px #101a331f,
+    inset 0 1px 2px #101a3317;
+}
+.design-hero .hero-carousel {
   margin: 0;
   background: #f2f4f6;
   border-radius: 20px;
-  padding: 24px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px #101a3321;
 }
-.design-hero figure img {
+.hero-carousel-viewport {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #dfe4e8;
+}
+.design-hero .hero-carousel img {
   width: 100%;
+  height: 100%;
   display: block;
-  border-radius: 12px;
-  aspect-ratio: 3/2;
   object-fit: cover;
+  transition: opacity 180ms ease;
 }
-.design-hero figcaption {
-  margin: 16px 4px 4px;
+.hero-carousel button {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  border: 1px solid #ffffff70;
+  border-radius: 50%;
+  background: #101a33c2;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transform: translateY(-50%);
+  box-shadow: 0 6px 16px #00000038;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+.hero-carousel button:hover {
+  background: #101a33ed;
+  transform: translateY(-50%) scale(1.04);
+}
+.hero-carousel button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+.hero-carousel button svg {
+  width: 25px;
+  height: 25px;
+}
+.hero-carousel-previous {
+  left: 16px;
+}
+.hero-carousel-next {
+  right: 16px;
+}
+.hero-carousel-count {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  border-radius: 999px;
+  background: #101a33c7;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.design-hero .hero-carousel-caption {
+  margin: 0;
+  min-height: 70px;
+  padding: 16px 20px 18px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
   color: #6b7684;
   font-size: 15px;
+}
+.hero-carousel-caption strong {
+  flex: 0 0 auto;
+  color: var(--navy);
+  font-size: 17px;
 }
 .proof-strip {
   border-top: 1px solid #f2f4f6;
@@ -420,14 +514,18 @@ body {
 .design-quote li svg {
   width: 18px;
 }
-.design-quote > div > a {
+.design-quote-contacts {
+  display: grid;
+  gap: 12px;
+}
+.design-quote-contact {
   display: flex;
   gap: 10px;
   align-items: center;
-  font-size: 23px;
+  font-size: 19px;
   font-weight: 800;
 }
-.design-quote > div > a svg {
+.design-quote-contact svg {
   width: 22px;
 }
 
@@ -446,6 +544,7 @@ body {
   margin-bottom: 16px;
 }
 .inquiry-form input,
+.inquiry-form select,
 .inquiry-form textarea {
   border: 1px solid #e5e8eb;
   background: #f9fafb;
@@ -454,6 +553,7 @@ body {
   outline: none;
 }
 .inquiry-form input:focus,
+.inquiry-form select:focus,
 .inquiry-form textarea:focus {
   border-color: var(--navy);
   box-shadow: 0 0 0 3px #1c2e5a12;
@@ -792,6 +892,21 @@ body {
   .design-actions a {
     text-align: center;
     justify-content: center;
+  }
+  .hero-carousel button {
+    width: 44px;
+    height: 44px;
+  }
+  .hero-carousel-previous {
+    left: 12px;
+  }
+  .hero-carousel-next {
+    right: 12px;
+  }
+  .design-hero .hero-carousel-caption {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
   .proof-strip {
     grid-template-columns: repeat(2, 1fr);

@@ -48,7 +48,7 @@
 .automatic-insights {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   margin: 0 4vw 12px;
 }
 .automatic-insights > div {
@@ -134,6 +134,22 @@
   font-size: 11px;
   font-weight: 800;
   margin-top: 10px;
+}
+.category-pill {
+  background: #eef3ff;
+  border-radius: 999px;
+  color: #3157a4;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  margin-top: 9px;
+  padding: 4px 8px;
+  width: fit-content;
+}
+.inquiry-category-detail {
+  color: #3157a4;
+  font-size: 12px !important;
+  font-weight: 800;
 }
 .attribution-detail {
   border-bottom: 1px solid #e7ebf0;

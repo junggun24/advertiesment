@@ -1,13 +1,15 @@
-import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
-export const metadata: Metadata = {
-  title: '업무분야',
+import { pageMetadata } from '@/lib/seo-metadata';
+
+export const metadata = pageMetadata({
+  title: '관공서·프랜차이즈 디스플레이 구축',
   description:
-    '관공서와 프랜차이즈의 운영 목적에 맞춘 디스플레이 구축 방식을 소개합니다.',
-  alternates: { canonical: '/business' },
-};
+    '관공서 나라장터 구매와 프랜차이즈 다점포 운영에 맞춘 안내전광판, 멀티비전 구축 방식을 소개합니다.',
+  path: '/business',
+  image: '/oic/case-1.jpg',
+});
 const sectors = [
   {
     id: 'public',

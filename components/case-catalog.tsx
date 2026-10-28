@@ -1,9 +1,9 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { ArrowRight, MapPin, Search } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import type { CaseStudy } from '@/lib/catalog';
+import { ResponsiveImage } from '@/components/responsive-image';
 import {
   CASE_PURPOSES,
   formatCaseDisplaySize,
@@ -13,7 +13,23 @@ import {
 
 const filters = ['전체', ...CASE_PURPOSES] as const;
 
-export function CaseCatalog({ items }: { items: CaseStudy[] }) {
+export type CaseCatalogItem = Pick<
+  CaseStudy,
+  | 'slug'
+  | 'title'
+  | 'place'
+  | 'purpose'
+  | 'summary'
+  | 'image'
+  | 'region'
+  | 'clientType'
+  | 'modelName'
+  | 'clientAddress'
+  | 'displayRows'
+  | 'displayColumns'
+>;
+
+export function CaseCatalog({ items }: { items: CaseCatalogItem[] }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('전체');
   const filtered = useMemo(
@@ -76,13 +92,13 @@ export function CaseCatalog({ items }: { items: CaseStudy[] }) {
                   aria-label={`${item.title} 구성 보기`}
                 >
                   {item.image && (
-                    <Image
-                      unoptimized
+                    <ResponsiveImage
                       className="catalog-image"
                       src={item.image}
                       alt={`${item.title} 설치 구성 예시`}
                       width={1200}
                       height={800}
+                      sizes="(max-width: 800px) 100vw, 50vw"
                     />
                   )}
                   <span>이미지 클릭하여 사례보기</span>

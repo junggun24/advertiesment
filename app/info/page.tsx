@@ -1,16 +1,16 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, Search } from 'lucide-react';
 import { getContentRecords } from '@/lib/content-data';
 import { prepareEditorHtml } from '@/lib/editor-content';
 import './seo-content.css';
+import { pageMetadata } from '@/lib/seo-metadata';
 
-export const metadata: Metadata = {
-  title: '디스플레이 정보',
+export const metadata = pageMetadata({
+  title: '안내전광판 가격·설치·나라장터 정보',
   description:
-    '안내전광판, 멀티비전, 옥외용 키오스크의 가격·설치·구매·A/S 질문에 쉽게 답합니다.',
-  alternates: { canonical: '/info' },
-};
+    '안내전광판, 멀티비전, 옥외용 키오스크의 가격, 규격, 설치, 나라장터 구매와 A/S 질문에 답합니다.',
+  path: '/info',
+});
 
 type FaqData = {
   tag: string;

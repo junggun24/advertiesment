@@ -14,6 +14,7 @@ import {
   type SeoSettings,
 } from '@/lib/content-types';
 import { AttributionTracker } from '@/components/attribution-tracker';
+import { getSiteSettings } from '@/lib/site-settings-data';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [saved] = await getContentItems<SeoSettings>('seo');
@@ -53,9 +54,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const site = await getSiteSettings();
   const schema = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -66,8 +68,16 @@ export default function RootLayout({
         url: `${PUBLIC_SITE_URL}/`,
         logo: `${PUBLIC_SITE_URL}/oic/logo.png`,
         image: `${PUBLIC_SITE_URL}/oic/logo.png`,
-        telephone: '+82-32-719-7947',
-        email: 'sales@oickorea.com',
+        telephone: site.consultantPhone,
+        email: site.consultantEmail,
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'sales',
+          telephone: site.consultantPhone,
+          email: site.consultantEmail,
+          availableLanguage: 'Korean',
+        },
+        sameAs: ['https://www.oickorea.com/'],
         address: {
           '@type': 'PostalAddress',
           streetAddress: '안남로 369번길 12, 5층',
@@ -82,21 +92,20 @@ export default function RootLayout({
         url: `${PUBLIC_SITE_URL}/`,
         name: '오아이씨코리아',
         publisher: { '@id': `${PUBLIC_SITE_URL}/#organization` },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: `${PUBLIC_SITE_URL}/info?q={search_term_string}`,
-          'query-input': 'required name=search_term_string',
-        },
       },
     ],
   };
   return (
     <html lang="ko">
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/favicon.svg" />
+      </head>
       <body>
         <AttributionTracker />
-        <SiteHeader />
+        <SiteHeader initialSite={site} />
         {children}
-        <SiteFooter />
+        <SiteFooter initialSite={site} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}

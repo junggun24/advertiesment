@@ -10,6 +10,7 @@ import {
   MessageSquareText,
   MonitorCog,
   Search,
+  UserRound,
 } from 'lucide-react';
 import './dashboard.css';
 const cards = [
@@ -30,6 +31,12 @@ const cards = [
     icon: FilePenLine,
     title: '콘텐츠 관리',
     text: '제품, 설치사례, FAQ와 사이트 기본정보를 관리합니다.',
+  },
+  {
+    href: '/admin/profile',
+    icon: UserRound,
+    title: '담당자 정보',
+    text: '신재훈 과장의 소개, 연락처와 프로필 사진을 관리합니다.',
   },
   {
     href: '/admin/models',

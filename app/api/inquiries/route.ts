@@ -1,6 +1,7 @@
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { dbApi } from '@/lib/db-api';
 import { normalizeAttribution } from '@/lib/inquiry-attribution';
+import { isInquiryCategory } from '@/lib/inquiry-categories';
 import { saveUpload } from '@/lib/object-storage';
 import { logError, logInfo } from '@/lib/monitoring';
 import {
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
   const name = asText(body.name).trim();
   const organization = asText(body.organization).trim();
   const contact = asText(body.contact).trim();
+  const inquiryCategory = asText(body.inquiryCategory).trim();
   const message = asText(body.message).trim();
   const privacyConsent = asText(body.privacyConsent) === 'agreed';
   const challenge = await verifyTurnstile(
@@ -60,6 +62,12 @@ export async function POST(request: Request) {
   if (!name || !organization || !contact || !message) {
     return Response.json(
       { ok: false, message: '필수 정보를 모두 입력해 주세요.' },
+      { status: 400 },
+    );
+  }
+  if (!isInquiryCategory(inquiryCategory)) {
+    return Response.json(
+      { ok: false, message: '문의 카테고리를 선택해 주세요.' },
       { status: 400 },
     );
   }
@@ -115,10 +123,11 @@ export async function POST(request: Request) {
         name,
         organization,
         contact,
+        inquiryCategory,
         message,
         attribution,
         privacyConsent: true,
-        privacyConsentVersion: '2026-09-21',
+        privacyConsentVersion: '2026-10-28',
       }),
     })) as { id: number };
     try {

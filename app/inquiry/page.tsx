@@ -1,15 +1,17 @@
-import type { Metadata } from 'next';
-import { Check, Phone } from 'lucide-react';
+import { Check, Mail, Phone } from 'lucide-react';
 import { InquiryForm } from '@/components/inquiry-form';
+import { pageMetadata } from '@/lib/seo-metadata';
+import { getSiteSettings } from '@/lib/site-settings-data';
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: '제품·견적 문의',
   description:
     '안내전광판, 멀티비전, 옥외용 키오스크 설치 장소와 목적을 남기면 필요한 규격과 견적 범위를 안내합니다.',
-  alternates: { canonical: '/inquiry' },
-};
+  path: '/inquiry',
+});
 
-export default function InquiryPage() {
+export default async function InquiryPage() {
+  const site = await getSiteSettings();
   return (
     <main className="inquiry-page">
       <section className="inquiry-top">
@@ -33,12 +35,24 @@ export default function InquiryPage() {
               현장 실사 필요 여부 확인
             </li>
           </ul>
-          <div className="static-phone">
-            <Phone />
-            <div>
-              <small>전화 상담</small>
-              <strong>032-719-7947</strong>
-            </div>
+          <div className="static-contacts">
+            <a
+              className="static-phone"
+              href={`tel:${site.consultantPhone.replace(/[^\d+]/g, '')}`}
+            >
+              <Phone />
+              <div>
+                <small>전화 상담</small>
+                <strong>{site.consultantPhone}</strong>
+              </div>
+            </a>
+            <a className="static-phone" href={`mailto:${site.consultantEmail}`}>
+              <Mail />
+              <div>
+                <small>E-MAIL</small>
+                <strong>{site.consultantEmail}</strong>
+              </div>
+            </a>
           </div>
         </div>
         <InquiryForm />

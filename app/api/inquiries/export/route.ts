@@ -20,10 +20,13 @@ export async function GET(request: Request) {
     };
     const status = url.searchParams.get('status');
     const source = url.searchParams.get('source');
+    const category = url.searchParams.get('category');
     const from = url.searchParams.get('from');
     const to = url.searchParams.get('to');
     if (status && status !== 'all') add('status', status);
     if (source && source !== 'all') add('source_type', source);
+    if (category && category !== 'all')
+      add('inquiry_category', category === '미분류' ? '' : category);
     if (from) {
       values.push(from);
       where.push('date(created_at)>=date(?)');

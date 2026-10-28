@@ -124,6 +124,7 @@ try {
     'name',
     'organization',
     'contact',
+    'inquiry_category',
     'message',
     'status',
     'assignee',
@@ -170,7 +171,8 @@ try {
   for (const row of inquiries) {
     inquirySql.run(
       ...inquiryColumns.map((column) => {
-        const value = row[column];
+        const value =
+          column === 'inquiry_category' ? row[column] || '' : row[column];
         if (['attribution_raw', 'journey', 'quality_flags'].includes(column)) {
           return json(value, column === 'quality_flags' ? [] : {});
         }

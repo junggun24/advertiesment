@@ -53,6 +53,7 @@ function inquiryFilter(url) {
   const where = [];
   const status = url.searchParams.get('status');
   const source = url.searchParams.get('source');
+  const category = url.searchParams.get('category');
   const from = url.searchParams.get('from');
   const to = url.searchParams.get('to');
   if (status && status !== 'all') {
@@ -62,6 +63,10 @@ function inquiryFilter(url) {
   if (source && source !== 'all') {
     values.push(source);
     where.push(`i.source_type=$${values.length}`);
+  }
+  if (category && category !== 'all') {
+    values.push(category === '미분류' ? '' : category);
+    where.push(`i.inquiry_category=$${values.length}`);
   }
   if (from) {
     values.push(from);
@@ -176,12 +181,13 @@ async function handler(request, response) {
       const value = await body(request);
       const tracking = value.attribution || {};
       const result = await pool.query(
-        `insert into inquiries (name, organization, contact, message, inquiry_channel, source_type, source_name, campaign, ad_group, keyword, content, landing_page, submitted_page, referrer, device_type, page_view_count, first_visited_at, elapsed_seconds, attribution_raw, last_source_type, last_source_name, last_campaign, last_ad_group, last_keyword, last_content, last_landing_page, last_referrer, session_count, session_page_view_count, last_visited_at, journey, quality_flags)
-         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,nullif($17,'')::timestamptz,$18,$19::jsonb,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,nullif($30,'')::timestamptz,$31::jsonb,$32::jsonb) returning *`,
+        `insert into inquiries (name, organization, contact, inquiry_category, message, inquiry_channel, source_type, source_name, campaign, ad_group, keyword, content, landing_page, submitted_page, referrer, device_type, page_view_count, first_visited_at, elapsed_seconds, attribution_raw, last_source_type, last_source_name, last_campaign, last_ad_group, last_keyword, last_content, last_landing_page, last_referrer, session_count, session_page_view_count, last_visited_at, journey, quality_flags)
+         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,nullif($18,'')::timestamptz,$19,$20::jsonb,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,nullif($31,'')::timestamptz,$32::jsonb,$33::jsonb) returning *`,
         [
           value.name,
           value.organization,
           value.contact,
+          value.inquiryCategory,
           value.message,
           tracking.inquiryChannel,
           tracking.sourceType,

@@ -1,7 +1,6 @@
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { cases, getProduct, type CaseStudy, type Product } from '@/lib/catalog';
 import {
@@ -12,6 +11,8 @@ import {
 import { prepareEditorHtml, resolveContentImage } from '@/lib/editor-content';
 import { getDisplayModels } from '@/lib/display-model-data';
 import { PUBLIC_SITE_URL } from '@/lib/content-types';
+import { absoluteSiteUrl } from '@/lib/seo-metadata';
+import { ResponsiveImage } from '@/components/responsive-image';
 import '../../detail-seo.css';
 
 async function storedProduct(slug: string) {
@@ -38,28 +39,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const saved = await storedProduct(slug);
   const product = saved?.product ?? getProduct(slug);
+  const image = product?.image || '/oic/prod-notice.jpg';
   return product
     ? {
-        title: product.name,
+        title: `${product.name} 규격·가격·설치 정보`,
         description: product.summary,
         alternates: { canonical: `/products/${slug}` },
-        ...(product.image
-          ? {
-              openGraph: {
-                title: product.name,
-                description: product.summary,
-                images: [
-                  { url: product.image, alt: `${product.name} 제품 이미지` },
-                ],
-              },
-              twitter: {
-                card: 'summary_large_image',
-                title: product.name,
-                description: product.summary,
-                images: [product.image],
-              },
-            }
-          : {}),
+        openGraph: {
+          title: `${product.name} 규격·가격·설치 정보`,
+          url: `/products/${slug}`,
+          description: product.summary,
+          locale: 'ko_KR',
+          siteName: '오아이씨코리아',
+          images: [{ url: image, alt: `${product.name} 제품 이미지` }],
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: `${product.name} 규격·가격·설치 정보`,
+          description: product.summary,
+          images: [image],
+        },
       }
     : {
         title: '제품을 찾을 수 없습니다.',
@@ -136,7 +135,7 @@ export default async function ProductDetail({
         '@type': 'Product',
         '@id': `${PUBLIC_SITE_URL}/products/${slug}#product`,
         name: product.name,
-        image: product.image || undefined,
+        image: product.image ? absoluteSiteUrl(product.image) : undefined,
         description: product.summary,
         brand: { '@type': 'Brand', name: 'OIC KOREA' },
         category: product.category,
@@ -189,13 +188,13 @@ export default async function ProductDetail({
           <span>{product.status}</span>
         </div>
         {product.image && (
-          <Image
-            unoptimized
+          <ResponsiveImage
             src={product.image}
             alt={`${product.name} 제품 이미지`}
             width={1200}
             height={800}
             priority
+            sizes="(max-width: 800px) 100vw, 50vw"
           />
         )}
       </section>

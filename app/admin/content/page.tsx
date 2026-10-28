@@ -17,7 +17,7 @@ import { RichTextEditor } from '@/components/rich-text-editor';
 import { Toaster, toast } from '@/components/ui/toast';
 import { extractFirstImage } from '@/lib/editor-content';
 import { contentQualityIssues } from '@/lib/content-quality';
-import { optimizeImageForUpload } from '@/lib/client-image';
+import { imageUploadFormData, prepareImageUpload } from '@/lib/client-image';
 import { CASE_PURPOSES } from '@/lib/case-categories';
 import './upload.css';
 import './seo-fields.css';
@@ -249,8 +249,6 @@ const fields: Record<EditableType, Field[]> = {
       multiline: true,
     },
     { key: 'buildingImage', label: '사옥 이미지', image: true },
-    { key: 'consultantName', label: '상담 담당자' },
-    { key: 'consultantImage', label: '담당자 사진', image: true },
   ],
 };
 
@@ -766,20 +764,22 @@ function ImageField({
     setUploading(true);
     setMessage('업로드용 이미지 최적화 중...');
     try {
-      const optimized = await optimizeImageForUpload(file);
-      const form = new FormData();
-      form.set('file', optimized);
+      const prepared = await prepareImageUpload(file);
+      const form = imageUploadFormData(prepared);
       const response = await fetch('/api/uploads', {
         method: 'POST',
         body: form,
       });
       const result = (await response.json()) as {
         url?: string;
+        variant_widths?: number[];
         message?: string;
       };
       if (response.ok && result.url) {
         onChange(result.url);
-        setMessage('업로드되었습니다. 저장 버튼을 눌러 반영하세요.');
+        setMessage(
+          `업로드되었습니다. 반응형 변형 ${result.variant_widths?.length ?? 0}개가 함께 저장되었습니다. 저장 버튼을 눌러 반영하세요.`,
+        );
       } else setMessage(result.message ?? '업로드하지 못했습니다.');
     } catch {
       setMessage('이미지를 처리하지 못했습니다.');

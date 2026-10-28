@@ -122,17 +122,6 @@ export const cases: CaseStudy[] = [
     status: '첨부 시안 사례 · 기관명 확인 필요',
     image: '/oic/case-2.jpg',
   },
-  {
-    slug: 'culture-video-wall',
-    title: '문화시설 안내 멀티비전',
-    place: '문화시설',
-    purpose: '교육환경개선',
-    productSlug: 'video-wall',
-    summary:
-      '행사 일정과 시설 안내를 한 화면에서 선명하게 전달하는 구성입니다.',
-    status: '첨부 시안 사례 · 기관명 확인 필요',
-    image: '/oic/case-4.jpg',
-  },
 ];
 
 export const getProduct = (slug: string) =>

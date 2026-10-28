@@ -88,6 +88,7 @@ const inquiryColumns = [
   'name',
   'organization',
   'contact',
+  'inquiry_category',
   'message',
   'status',
   'assignee',
@@ -134,7 +135,7 @@ const assetColumns = [
 ];
 
 const normalizedInquiryValue = (row, column) => {
-  const value = row[column];
+  const value = column === 'inquiry_category' ? row[column] || '' : row[column];
   if (['attribution_raw', 'journey', 'quality_flags'].includes(column)) {
     return json(value, column === 'quality_flags' ? [] : {});
   }

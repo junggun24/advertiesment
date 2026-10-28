@@ -1,14 +1,16 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
+import { pageMetadata } from '@/lib/seo-metadata';
+import { getSiteSettings } from '@/lib/site-settings-data';
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: '개인정보 처리 안내',
   description:
     '오아이씨코리아 견적 문의 과정에서 수집하는 개인정보와 이용 목적을 안내합니다.',
-  alternates: { canonical: '/privacy' },
-};
+  path: '/privacy',
+});
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const site = await getSiteSettings();
   return (
     <main className="legal-page">
       <header>
@@ -19,8 +21,8 @@ export default function PrivacyPage() {
       <section>
         <h2>견적 문의 시 수집하는 정보</h2>
         <p>
-          이름, 회사·기관명, 연락처, 문의 내용과 이용자가 직접 첨부한 파일을
-          수집합니다.
+          이름, 회사·기관명, 연락처, 문의 카테고리, 문의 내용과 이용자가 직접
+          첨부한 파일을 수집합니다.
         </p>
         <h2>이용 목적</h2>
         <p>
@@ -40,10 +42,15 @@ export default function PrivacyPage() {
         </p>
         <h2>문의</h2>
         <p>
-          개인정보 열람·수정·삭제 요청은 대표전화 032-719-7947 또는
-          sales@oickorea.com으로 연락해 주세요.
+          개인정보 열람·수정·삭제 요청은 제품·견적 상담번호{' '}
+          <a href={`tel:${site.consultantPhone.replace(/[^\d+]/g, '')}`}>
+            {site.consultantPhone}
+          </a>{' '}
+          또는{' '}
+          <a href={`mailto:${site.consultantEmail}`}>{site.consultantEmail}</a>
+          으로 연락해 주세요.
         </p>
-        <p className="legal-version">동의 문서 버전: 2026-09-21</p>
+        <p className="legal-version">동의 문서 버전: 2026-10-28</p>
         <Link href="/inquiry">견적 문의로 돌아가기</Link>
       </section>
     </main>

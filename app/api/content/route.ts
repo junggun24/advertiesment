@@ -9,7 +9,13 @@ export async function GET(request: Request) {
     const data = await dbApi(
       `/content${type ? `?type=${encodeURIComponent(type)}` : ''}`,
     );
-    return Response.json(data);
+    return Response.json(data, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
+        Expires: '0',
+        Pragma: 'no-cache',
+      },
+    });
   } catch (error) {
     return Response.json(
       {

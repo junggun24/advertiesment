@@ -13,7 +13,8 @@ function contentPaths(item: ChangedContent) {
   if (type === 'product' && slug) return [`/products/${slug}`, '/products'];
   if (type === 'case' && slug) return [`/cases/${slug}`, '/cases'];
   if (type === 'faq') return ['/info'];
-  if (type === 'site' || type === 'seo') return ['/'];
+  if (type === 'site') return ['/', '/about', '/people/shin-jaehoon'];
+  if (type === 'seo') return ['/'];
   return [];
 }
 

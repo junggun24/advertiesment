@@ -10,6 +10,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { inquiryCategories } from '@/lib/inquiry-categories';
 import './attachments.css';
 import './analytics.css';
 
@@ -25,6 +26,7 @@ type Inquiry = {
   name: string;
   organization: string;
   contact: string;
+  inquiry_category: string;
   message: string;
   status: string;
   assignee: string;
@@ -102,6 +104,7 @@ export default function InquiryAdmin() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [source, setSource] = useState('all');
+  const [category, setCategory] = useState('all');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [loading, setLoading] = useState(true);
@@ -147,10 +150,15 @@ export default function InquiryAdmin() {
         (v) =>
           (filter === 'all' || v.status === filter) &&
           (source === 'all' || (v.source_type || 'Unknown') === source) &&
+          (category === 'all' ||
+            (category === '미분류'
+              ? !v.inquiry_category
+              : v.inquiry_category === category)) &&
           [
             v.name,
             v.organization,
             v.contact,
+            v.inquiry_category,
             v.message,
             v.source_name,
             v.campaign,
@@ -160,7 +168,7 @@ export default function InquiryAdmin() {
             .toLowerCase()
             .includes(query.toLowerCase()),
       ),
-    [dated, query, filter, source],
+    [dated, query, filter, source, category],
   );
   const sourceCounts = useMemo(
     () =>
@@ -174,6 +182,18 @@ export default function InquiryAdmin() {
   const maxSource = Math.max(1, ...sourceCounts.map((v) => v.count));
   const repeatCount = dated.filter((v) => (v.session_count || 1) > 1).length;
   const warningCount = dated.filter((v) => v.quality_flags?.length).length;
+  const categoryStats = useMemo(
+    () =>
+      [...inquiryCategories, '미분류'].map((label) => ({
+        label,
+        count: dated.filter((item) =>
+          label === '미분류'
+            ? !item.inquiry_category
+            : item.inquiry_category === label,
+        ).length,
+      })),
+    [dated],
+  );
   const campaignStats = useMemo(() => {
     const counts = new Map<string, number>();
     for (const item of dated) {
@@ -282,7 +302,9 @@ export default function InquiryAdmin() {
   const exportParams = new URLSearchParams();
   if (filter !== 'all') exportParams.set('status', filter);
   if (source !== 'all') exportParams.set('source', source);
+  if (category !== 'all') exportParams.set('category', category);
   if (from) exportParams.set('from', from);
+  if (to) exportParams.set('to', to);
   const exportQuery = exportParams.toString();
   return (
     <main className="admin-page inquiry-admin">
@@ -331,6 +353,21 @@ export default function InquiryAdmin() {
               ))}
             </select>
           </label>
+          <label>
+            문의 카테고리
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="all">전체 카테고리</option>
+              {inquiryCategories.map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+              <option value="미분류">미분류</option>
+            </select>
+          </label>
         </div>
         <a
           className="excel-export"
@@ -373,6 +410,15 @@ export default function InquiryAdmin() {
         </div>
       </section>
       <section className="automatic-insights">
+        <div>
+          <h2>문의 카테고리</h2>
+          {categoryStats.map(({ label, count }) => (
+            <p key={label}>
+              <span>{label}</span>
+              <b>{count}건</b>
+            </p>
+          ))}
+        </div>
         <div>
           <h2>캠페인·유입 상위</h2>
           {campaignStats.length ? (
@@ -420,7 +466,9 @@ export default function InquiryAdmin() {
               <b>{count}건</b>
             </p>
           ))}
-          <small>최초 유입 기준 · 전환율은 검색엔진별 방문 수 연동 후 표시</small>
+          <small>
+            최초 유입 기준 · 전환율은 검색엔진별 방문 수 연동 후 표시
+          </small>
         </div>
       </section>
       <section className="admin-stats">
@@ -450,7 +498,7 @@ export default function InquiryAdmin() {
               aria-label="문의 검색"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="기관, 이름, 연락처, 캠페인 검색"
+              placeholder="기관, 이름, 연락처, 카테고리, 캠페인 검색"
             />
           </label>
           {loading ? (
@@ -472,6 +520,9 @@ export default function InquiryAdmin() {
                 <span>
                   {v.name} · {v.contact}
                 </span>
+                <small className="category-pill">
+                  {v.inquiry_category || '미분류'}
+                </small>
                 <p>{v.message}</p>
                 <small
                   className="source-pill"
@@ -508,6 +559,9 @@ export default function InquiryAdmin() {
               </div>
               <article>
                 <h2>문의 내용</h2>
+                <p className="inquiry-category-detail">
+                  카테고리: {selected.inquiry_category || '미분류'}
+                </p>
                 <p>{selected.message}</p>
                 <small>
                   개인정보 동의:{' '}

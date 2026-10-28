@@ -1,5 +1,8 @@
 import { cases } from '@/lib/catalog';
-import { CaseCatalog } from '@/components/case-catalog';
+import {
+  CaseCatalog,
+  type CaseCatalogItem,
+} from '@/components/case-catalog';
 import { getContentItems, mergeBySlug } from '@/lib/content-data';
 import type { CaseStudy } from '@/lib/catalog';
 import Link from 'next/link';
@@ -9,6 +12,20 @@ export default async function CasesPage() {
     cases,
     await getContentItems<CaseStudy>('case'),
   );
+  const catalogItems: CaseCatalogItem[] = caseItems.map((item) => ({
+    slug: item.slug,
+    title: item.title,
+    place: item.place,
+    purpose: item.purpose,
+    summary: item.summary,
+    image: item.image,
+    region: item.region,
+    clientType: item.clientType,
+    modelName: item.modelName,
+    clientAddress: item.clientAddress,
+    displayRows: item.displayRows,
+    displayColumns: item.displayColumns,
+  }));
   return (
     <main className="catalog-page">
       <div className="subnav">
@@ -30,7 +47,7 @@ export default async function CasesPage() {
           수 있습니다.
         </p>
       </section>
-      <CaseCatalog items={caseItems} />
+      <CaseCatalog items={catalogItems} />
     </main>
   );
 }

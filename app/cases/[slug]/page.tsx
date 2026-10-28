@@ -1,7 +1,6 @@
 import { ArrowRight, MapPin } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import {
   getCase,
@@ -13,6 +12,8 @@ import { getContentItems, getContentRecords } from '@/lib/content-data';
 import { prepareEditorHtml, resolveContentImage } from '@/lib/editor-content';
 import { PUBLIC_SITE_URL } from '@/lib/content-types';
 import { formatCaseDisplaySize } from '@/lib/case-categories';
+import { absoluteSiteUrl } from '@/lib/seo-metadata';
+import { ResponsiveImage } from '@/components/responsive-image';
 import '../../detail-seo.css';
 
 async function storedCase(slug: string) {
@@ -39,27 +40,27 @@ export async function generateMetadata({
   const { slug } = await params;
   const saved = await storedCase(slug);
   const item = saved?.item ?? getCase(slug);
+  const image = item?.image || '/oic/prod-notice.jpg';
   return item
     ? {
-        title: item.title,
+        title: `${item.title} 디스플레이 설치 사례`,
         description: item.summary,
         alternates: { canonical: `/cases/${slug}` },
-        ...(item.image
-          ? {
-              openGraph: {
-                title: item.title,
-                description: item.summary,
-                type: 'article',
-                images: [{ url: item.image, alt: `${item.title} 설치 이미지` }],
-              },
-              twitter: {
-                card: 'summary_large_image',
-                title: item.title,
-                description: item.summary,
-                images: [item.image],
-              },
-            }
-          : {}),
+        openGraph: {
+          title: `${item.title} 디스플레이 설치 사례`,
+          url: `/cases/${slug}`,
+          description: item.summary,
+          type: 'article',
+          locale: 'ko_KR',
+          siteName: '오아이씨코리아',
+          images: [{ url: image, alt: `${item.title} 설치 이미지` }],
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: `${item.title} 디스플레이 설치 사례`,
+          description: item.summary,
+          images: [image],
+        },
       }
     : {
         title: '사례를 찾을 수 없습니다.',
@@ -100,14 +101,23 @@ export default async function CaseDetail({
         '@id': `${PUBLIC_SITE_URL}/cases/${slug}#article`,
         headline: item.title,
         description: item.summary,
-        image: item.image || undefined,
+        image: item.image ? absoluteSiteUrl(item.image) : undefined,
+        mainEntityOfPage: `${PUBLIC_SITE_URL}/cases/${slug}`,
         datePublished: published,
         dateModified: modified,
         author: {
           '@type': 'Organization',
           name: item.author || '오아이씨코리아',
         },
-        publisher: { '@type': 'Organization', name: '주식회사 오아이씨코리아' },
+        publisher: {
+          '@type': 'Organization',
+          '@id': `${PUBLIC_SITE_URL}/#organization`,
+          name: '주식회사 오아이씨코리아',
+          logo: {
+            '@type': 'ImageObject',
+            url: `${PUBLIC_SITE_URL}/oic/logo.png`,
+          },
+        },
         about: product
           ? {
               '@type': 'Product',
@@ -157,13 +167,13 @@ export default async function CaseDetail({
           <span>{item.status}</span>
         </div>
         {item.image && (
-          <Image
-            unoptimized
+          <ResponsiveImage
             src={item.image}
             alt={`${item.title} 설치 구성 예시`}
             width={1200}
             height={800}
             priority
+            sizes="(max-width: 800px) 100vw, 50vw"
           />
         )}
       </section>

@@ -7,16 +7,15 @@ import { FileText, Menu, Phone, X } from 'lucide-react';
 import { useState } from 'react';
 import { InquiryForm } from './inquiry-form';
 import { useContent } from '@/lib/use-content';
-import { defaultSiteSettings, type SiteSettings } from '@/lib/content-types';
+import { mergeSiteSettings, type SiteSettings } from '@/lib/content-types';
 
-export function SiteHeader() {
+export function SiteHeader({ initialSite }: { initialSite: SiteSettings }) {
   const pathname = usePathname();
   const [menu, setMenu] = useState(false);
   const [quote, setQuote] = useState(false);
   const [phone, setPhone] = useState(false);
-  const site =
-    useContent<SiteSettings>('site', [defaultSiteSettings])[0] ??
-    defaultSiteSettings;
+  const savedSite = useContent<SiteSettings>('site', [initialSite])[0];
+  const site = mergeSiteSettings(savedSite);
   if (pathname.startsWith('/admin')) return null;
   return (
     <>
@@ -50,10 +49,12 @@ export function SiteHeader() {
         </button>
         {phone && (
           <div className="phone-card">
-            <small>영업팀 · 과장</small>
+            <small>{site.consultantDepartment}</small>
             <strong>{site.consultantName}</strong>
-            <a href={`tel:${site.phone.replaceAll('-', '')}`}>{site.phone}</a>
-            <span>평일 09:00–18:00</span>
+            <a href={`tel:${site.consultantPhone.replace(/[^\d+]/g, '')}`}>
+              {site.consultantPhone}
+            </a>
+            <span>{site.consultantHours}</span>
             <button onClick={() => setPhone(false)}>닫기</button>
           </div>
         )}

@@ -9,6 +9,7 @@ await pool.query(`create table if not exists inquiries (
   name varchar(40) not null,
   organization varchar(100) not null,
   contact varchar(40) not null,
+  inquiry_category varchar(40) not null default '',
   message text not null,
   status varchar(20) not null default 'new',
   assignee varchar(80) not null default '',
@@ -20,6 +21,7 @@ await pool.query(
   'create index if not exists idx_inquiries_status_created on inquiries(status, created_at desc)',
 );
 for (const statement of [
+  "alter table inquiries add column if not exists inquiry_category varchar(40) not null default ''",
   "alter table inquiries add column if not exists inquiry_channel varchar(80) not null default '상담신청 폼'",
   "alter table inquiries add column if not exists source_type varchar(40) not null default 'Unknown'",
   "alter table inquiries add column if not exists source_name varchar(160) not null default '확인 불가'",
@@ -52,6 +54,9 @@ for (const statement of [
   await pool.query(statement);
 await pool.query(
   'create index if not exists idx_inquiries_source_created on inquiries(source_type, created_at desc)',
+);
+await pool.query(
+  'create index if not exists idx_inquiries_category_created on inquiries(inquiry_category, created_at desc)',
 );
 await pool.query(`create table if not exists content_items (
   id bigserial primary key,
@@ -161,7 +166,7 @@ const seeds = [
     data: {
       companyName: '주식회사 오아이씨코리아',
       phone: '032-719-7947',
-      email: 'sales@oickorea.com',
+      email: 'jeromes@oickorea.com',
       address: '인천광역시 부평구 안남로 369번길 12, 5층',
       fax: '032-719-7591',
       businessNumber: '130-86-61170',
@@ -169,6 +174,14 @@ const seeds = [
       heroDescription:
         '공공기관 안내전광판부터 멀티비전, 옥외용 키오스크까지. 설치 목적과 공간에 맞춰 기획·제작·설치를 한 번에 진행합니다.',
       consultantName: '신재훈 과장',
+      consultantDepartment: '오아이씨코리아 영업팀',
+      consultantRole: '제품 및 견적 상담',
+      consultantPhone: '032-719-7947',
+      consultantEmail: 'jeromes@oickorea.com',
+      consultantHours: '평일 09:00–18:00',
+      consultantImage: '',
+      consultantIntroduction:
+        '제품명을 정하기 전부터 상담할 수 있습니다. 설치 장소와 전달할 정보를 기준으로 확인해야 할 조건을 정리하고, 제작·설치 담당자에게 이어질 수 있는 견적 요청서로 구체화합니다.',
     },
   },
   {
@@ -204,6 +217,9 @@ for (const item of seeds)
    on conflict(type,slug) do nothing`,
     [item.type, item.slug, item.title, item.data, item.sort],
   );
+await pool.query(
+  "delete from content_items where type='case' and slug='culture-video-wall'",
+);
 await pool.query(
   "update content_items set data=jsonb_set(data,'{question}',to_jsonb(title)) where type='faq' and not (data ? 'question')",
 );
