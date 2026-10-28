@@ -17,6 +17,18 @@ void test('fills new consultant fields for existing site records', () => {
   assert.equal(settings.consultantImage, '');
 });
 
+void test('uses the approved footer company information by default', () => {
+  assert.equal(defaultSiteSettings.companyName, '(주)오아이씨코리아');
+  assert.equal(
+    defaultSiteSettings.address,
+    '인천광역시 부평구 안남로369번길 12 (청천동, 오아이씨코리아 사옥)',
+  );
+  assert.equal(defaultSiteSettings.consultantPhone, '032-719-7947');
+  assert.equal(defaultSiteSettings.fax, '032-719-7591');
+  assert.equal(defaultSiteSettings.consultantEmail, 'jeromes@oickorea.com');
+  assert.equal(defaultSiteSettings.consultantHours, '평일 09:00–18:00');
+});
+
 void test('keeps every saved consultant profile value', () => {
   const settings = mergeSiteSettings({
     email: 'old-company@example.com',

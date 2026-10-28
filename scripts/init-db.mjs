@@ -164,10 +164,11 @@ const seeds = [
     title: '사이트 기본정보',
     sort: 0,
     data: {
-      companyName: '주식회사 오아이씨코리아',
+      companyName: '(주)오아이씨코리아',
       phone: '032-719-7947',
       email: 'jeromes@oickorea.com',
-      address: '인천광역시 부평구 안남로 369번길 12, 5층',
+      address:
+        '인천광역시 부평구 안남로369번길 12 (청천동, 오아이씨코리아 사옥)',
       fax: '032-719-7591',
       businessNumber: '130-86-61170',
       heroTitle: '모든 디스플레이, 커스텀 주문 제작이 가능합니다.',

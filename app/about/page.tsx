@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Building2, Check, MapPin, Wrench } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { pageMetadata } from '@/lib/seo-metadata';
 import { getSiteSettings } from '@/lib/site-settings-data';
 
@@ -25,8 +25,8 @@ export default async function AboutPage() {
             제대로 보이게 만듭니다.
           </h1>
           <p>
-            오아이씨코리아는 안내전광판, 멀티비전, 옥외용 키오스크를 설치 목적과
-            현장 조건에 맞춰 구성하는 디스플레이 전문 기업입니다.
+            오아이씨코리아는 2011년 설립 이래 디스플레이 산업의 기술 발전과 ICT
+            융합 환경에 발맞춰 성장해 온 디스플레이 솔루션 전문 기업입니다.
           </p>
         </div>
         <figure>
@@ -51,37 +51,37 @@ export default async function AboutPage() {
         </div>
         <div>
           <p>
-            공공청사, 상황실, 문화시설과 옥외 공간은 필요한 밝기와 내구성,
-            콘텐츠 운영 방법이 서로 다릅니다. 그래서 제품명부터 정하지 않고 누가
-            어떤 정보를 어디에서 봐야 하는지부터 확인합니다.
-          </p>
-          <p>
-            검토 결과를 바탕으로 제품 규격, 설치 구조, 전기·통신 공사 범위와
-            운영 방법을 하나의 제안으로 정리합니다.
+            안내전광판, 멀티비전, 옥외용 키오스크 등 다양한 디스플레이 장치를
+            설치 목적과 현장 환경에 맞춰 설계·구축하며, 축적된 기술력과 전문성을
+            바탕으로 고객의 요구에 최적화된 맞춤형 디스플레이 솔루션을
+            제공합니다.
           </p>
         </div>
       </section>
       <section className="value-grid trust-grid">
         <article>
-          <Building2 />
-          <h2>자체 사옥 기반</h2>
+          <h2>01. ONE WAY SOLUTION</h2>
           <p>
-            인천 부평구 사옥을 기반으로 제품 검토부터 제작·설치 상담까지 책임
-            있게 진행합니다.
+            자체 제조 기술과 R&amp;D 노하우를 바탕으로 디스플레이 시스템의
+            설계부터 제조, 설치 및 유지보수까지 모든 과정을 통합 관리하는 원스톱
+            디스플레이 솔루션을 제공합니다.
           </p>
         </article>
         <article>
-          <Wrench />
-          <h2>현장 중심 설계</h2>
+          <h2>02. 현장 중심의 맞춤형 설계 역량</h2>
           <p>
-            벽체, 반입 동선, 배선과 시청 거리를 확인해 설치 후 생길 문제를
-            줄입니다.
+            설치 공간의 특성과 사용 목적을 분석하여 시청 거리, 설치 구조, 배선
+            환경 등을 종합적으로 고려하고, 현장 조건에 최적화된 맞춤형
+            디스플레이 시스템을 설계·구축합니다.
           </p>
         </article>
         <article>
-          <Check />
-          <h2>납품 이후 지원</h2>
-          <p>검수, 사용 방법과 유지보수 접수 창구를 명확하게 안내합니다.</p>
+          <h2>03. 체계적인 유지보수 및 기술지원</h2>
+          <p>
+            제품 납품 이후에도 안정적인 시스템 운영을 위해 기술지원과 유지보수
+            서비스를 제공하며, 신속한 장애 대응과 지속적인 사후관리로 고객의
+            운영 부담을 줄입니다.
+          </p>
         </article>
       </section>
       <section className="company-facts">
@@ -96,18 +96,15 @@ export default async function AboutPage() {
         <dl>
           <div>
             <dt>본사</dt>
-            <dd>
-              <MapPin />
-              인천광역시 부평구 안남로 369번길 12, 5층
-            </dd>
+            <dd>인천광역시 부평구 안남로369번길 12 오아이씨코리아 사옥</dd>
           </div>
           <div>
-            <dt>제품·견적 상담</dt>
+            <dt>대표전화</dt>
             <dd>{site.consultantPhone}</dd>
           </div>
           <div>
             <dt>팩스</dt>
-            <dd>032-719-7591</dd>
+            <dd>{site.fax}</dd>
           </div>
           <div>
             <dt>이메일</dt>
@@ -119,7 +116,7 @@ export default async function AboutPage() {
           </div>
           <div>
             <dt>사업자등록번호</dt>
-            <dd>130-86-61170</dd>
+            <dd>{site.businessNumber}</dd>
           </div>
         </dl>
       </section>
@@ -128,7 +125,7 @@ export default async function AboutPage() {
           <h2>
             제품과 현장을 연결하는
             <br />
-            상담 담당자를 만나보세요.
+            설계 담당자를 만나보세요.
           </h2>
           <p>문의 전에 담당자의 역할과 상담 진행 방식을 확인할 수 있습니다.</p>
         </div>

@@ -13,9 +13,8 @@ export function SiteFooter({ initialSite }: { initialSite: SiteSettings }) {
       <div>
         <b>{site.companyName}</b>
         <p>주소. {site.address}</p>
-        {pathname !== '/' && <p>사업자등록번호. {site.businessNumber}</p>}
         <p>
-          제품·견적 상담. {site.consultantPhone} · 팩스. {site.fax}
+          전화번호. {site.consultantPhone} · 팩스. {site.fax}
         </p>
         <p>
           이메일. {site.consultantEmail} · {site.consultantHours}
