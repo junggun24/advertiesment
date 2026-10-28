@@ -653,19 +653,12 @@ body {
   max-width: 1240px;
   margin: auto;
   padding: 55px 40px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
 }
-.sector-row.reverse > div {
-  order: 2;
+.sector-row + .sector-row {
+  border-top: 1px solid #e5e8eb;
 }
-.sector-row img {
-  width: 100%;
-  aspect-ratio: 16/11;
-  object-fit: cover;
-  border-radius: 20px;
+.sector-copy {
+  max-width: 920px;
 }
 .sector-row small {
   color: var(--red);
@@ -688,14 +681,21 @@ body {
 }
 .sector-row li {
   display: flex;
-  gap: 9px;
-  margin: 10px 0;
+  align-items: baseline;
+  gap: 12px;
+  margin: 12px 0;
 }
-.sector-row li svg {
-  width: 18px;
+.sector-row li b {
+  min-width: 28px;
+  color: #3569b7;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.sector-row li span {
   color: var(--navy);
+  font-weight: 700;
 }
-.sector-row a {
+.sector-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -705,8 +705,39 @@ body {
   border-radius: 12px;
   font-weight: 700;
 }
-.sector-row a svg {
+.sector-cta svg {
   width: 17px;
+}
+.sector-diagram {
+  margin: 38px 0 0;
+}
+.sector-diagram > a {
+  display: block;
+  overflow: hidden;
+  border: 1px solid #e5e8eb;
+  border-radius: 20px;
+  background: #f7f8fa;
+  box-shadow: 0 14px 34px rgb(25 31 40 / 9%);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+.sector-diagram > a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgb(25 31 40 / 13%);
+}
+.sector-diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+.sector-diagram figcaption {
+  margin-top: 10px;
+  color: #8b95a1;
+  font-size: 13px;
+  text-align: right;
 }
 
 .complete-page {
@@ -926,8 +957,7 @@ body {
   .design-case-grid,
   .task-section > div,
   .process-section > div,
-  .design-quote,
-  .sector-row {
+  .design-quote {
     grid-template-columns: 1fr;
   }
   .design-case-more a {
@@ -966,10 +996,12 @@ body {
   }
   .sector-row {
     padding: 45px 20px;
-    gap: 32px;
   }
-  .sector-row.reverse > div {
-    order: 0;
+  .sector-diagram {
+    margin-top: 30px;
+  }
+  .sector-diagram > a {
+    border-radius: 14px;
   }
   .floating-contact {
     right: 16px;

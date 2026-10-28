@@ -21,12 +21,14 @@ export default async function ProductsPage() {
           PRODUCTS
         </p>
         <h1>
-          설치 목적에 맞는
+          설치 목적과 예산에 맞는
           <br />
-          제품을 찾아보세요.
+          최적의 디스플레이 솔루션을 확인해 보세요.
         </h1>
         <p>
-          제품명이나 사용 목적을 검색하면 관련 제품을 바로 확인할 수 있습니다.
+          설치 환경과 운영 목적을 고려하여 안내전광판, 멀티비전, 옥외용 키오스크
+          등 적합한 제품을 제안하고, 예산 활용의 효율성과 유지관리 편의성까지
+          함께 검토합니다.
         </p>
       </section>
       <ProductCatalog items={catalog} />
