@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
+  CalendarDays,
   FilePenLine,
   ClipboardList,
   Link2,
@@ -10,9 +11,17 @@ import {
   MessageSquareText,
   MonitorCog,
   Search,
+  UsersRound,
   UserRound,
 } from 'lucide-react';
 import './dashboard.css';
+
+type DashboardStats = {
+  asOfDate: string;
+  visitors: { today: number; total: number };
+  inquiries: { today: number; total: number };
+};
+
 const cards = [
   {
     href: '/admin/requirements',
@@ -59,6 +68,8 @@ const cards = [
 ];
 export default function AdminDashboardPage() {
   const [ready, setReady] = useState(false);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [statsError, setStatsError] = useState('');
   useEffect(() => {
     void fetch('/api/admin/session')
       .then(async (r) => {
@@ -66,6 +77,23 @@ export default function AdminDashboardPage() {
         if (!d.authenticated) {
           location.replace('/admin/login');
           return;
+        }
+        try {
+          const response = await fetch('/api/admin/dashboard-stats', {
+            cache: 'no-store',
+          });
+          const data = (await response.json()) as DashboardStats & {
+            message?: string;
+          };
+          if (!response.ok)
+            throw new Error(data.message || '통계를 불러오지 못했습니다.');
+          setStats(data);
+        } catch (error) {
+          setStatsError(
+            error instanceof Error
+              ? error.message
+              : '통계를 불러오지 못했습니다.',
+          );
         }
         setReady(true);
       })
@@ -81,6 +109,38 @@ export default function AdminDashboardPage() {
         <p>관리자 권한을 확인하고 있습니다.</p>
       </main>
     );
+  const formatCount = (value: number | undefined) =>
+    value === undefined ? '-' : new Intl.NumberFormat('ko-KR').format(value);
+  const overview = [
+    {
+      label: '오늘 방문자',
+      value: stats?.visitors.today,
+      icon: CalendarDays,
+      tone: 'visitor',
+      unit: '명',
+    },
+    {
+      label: '누적 방문자',
+      value: stats?.visitors.total,
+      icon: UsersRound,
+      tone: 'visitor',
+      unit: '명',
+    },
+    {
+      label: '오늘 문의',
+      value: stats?.inquiries.today,
+      icon: MessageSquareText,
+      tone: 'inquiry-tone',
+      unit: '건',
+    },
+    {
+      label: '누적 문의',
+      value: stats?.inquiries.total,
+      icon: ClipboardList,
+      tone: 'inquiry-tone',
+      unit: '건',
+    },
+  ];
   return (
     <main className="admin-dashboard">
       <header>
@@ -97,7 +157,48 @@ export default function AdminDashboardPage() {
           </button>
         </span>
       </header>
-      <section>
+      <section
+        className="admin-overview"
+        aria-labelledby="admin-overview-title"
+      >
+        <header>
+          <div>
+            <small>DAILY OVERVIEW</small>
+            <h2 id="admin-overview-title">접속 및 문의 현황</h2>
+          </div>
+          <div className="admin-overview-actions">
+            <span>{stats?.asOfDate || '한국시간 기준'}</span>
+            <Link href="/admin/analytics">
+              집계 상세보기 <ArrowRight />
+            </Link>
+          </div>
+        </header>
+        <div className="admin-overview-grid">
+          {overview.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article className={item.tone} key={item.label}>
+                <div>
+                  <Icon />
+                </div>
+                <span>{item.label}</span>
+                <strong>{formatCount(item.value)}</strong>
+                <small>{item.unit}</small>
+              </article>
+            );
+          })}
+        </div>
+        {statsError ? (
+          <p className="admin-overview-error">{statsError}</p>
+        ) : (
+          <p className="admin-overview-note">
+            방문자는 브라우저별 고유 식별자를 기준으로 집계하며 관리자 페이지는
+            제외합니다. 방문자 누적은 집계 기능 적용 시점부터 시작하며, 문의는
+            정상 접수되어 저장된 건수를 표시합니다.
+          </p>
+        )}
+      </section>
+      <section className="admin-management-grid">
         {cards.map((card) => {
           const Icon = card.icon;
           return (

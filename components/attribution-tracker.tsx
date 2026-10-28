@@ -32,6 +32,7 @@ type Touch = Record<string, string>;
 type JourneyPage = { path: string; enteredAt: string; durationSeconds: number };
 type JourneyEvent = { type: string; label: string; path: string; at: string };
 type StoredAttribution = {
+  visitorId?: string;
   firstTouch?: Touch;
   lastTouch?: Touch;
   firstVisitedAt?: string;
@@ -148,8 +149,10 @@ export function currentAttribution() {
   const first = Date.parse(saved.firstVisitedAt || '');
   saved.lastVisitedAt = new Date(now).toISOString();
   write(saved);
+  const attribution = { ...saved };
+  delete attribution.visitorId;
   return {
-    ...saved,
+    ...attribution,
     submittedPage: page(),
     elapsedSeconds: Number.isFinite(first)
       ? Math.max(0, Math.round((now - first) / 1000))
@@ -161,12 +164,14 @@ export function currentAttribution() {
 export function AttributionTracker() {
   const pathname = usePathname();
   useEffect(() => {
+    if (pathname.startsWith('/admin')) return;
     const now = Date.now();
     const iso = new Date(now).toISOString();
     const saved = read();
     const lastActivity = Date.parse(saved.lastActivityAt || '');
     const newSession =
       !Number.isFinite(lastActivity) || now - lastActivity > SESSION_TIMEOUT;
+    if (!saved.visitorId) saved.visitorId = crypto.randomUUID();
     closeLastPage(saved, now);
     const currentTouch = touch();
     const hasSignal =
@@ -192,6 +197,12 @@ export function AttributionTracker() {
     pages.push({ path: page(), enteredAt: iso, durationSeconds: 0 });
     saved.pages = pages.slice(-100);
     write(saved);
+    void fetch('/api/analytics/visit', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ visitorId: saved.visitorId }),
+      keepalive: true,
+    }).catch(() => undefined);
     emitMeasurement('page_view', document.title);
     if (pathname.startsWith('/products/'))
       emitMeasurement(

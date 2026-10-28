@@ -51,6 +51,36 @@ CREATE INDEX IF NOT EXISTS idx_inquiries_category_created
 ON inquiries(inquiry_category, created_at)
 `;
 
+export const createSiteVisitorsTable = `
+CREATE TABLE IF NOT EXISTS site_visitors (
+  visitor_hash TEXT PRIMARY KEY,
+  first_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  page_views INTEGER NOT NULL DEFAULT 1
+)`;
+
+export const createSiteVisitorDaysTable = `
+CREATE TABLE IF NOT EXISTS site_visitor_days (
+  visit_date TEXT NOT NULL,
+  visitor_hash TEXT NOT NULL,
+  first_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  page_views INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY (visit_date, visitor_hash)
+)`;
+
+export const createSiteVisitorDaysIndex = `
+CREATE INDEX IF NOT EXISTS idx_site_visitor_days_date
+ON site_visitor_days(visit_date)
+`;
+
+export const createAnalyticsDetailIndexes = `
+CREATE INDEX IF NOT EXISTS idx_site_visitors_first_seen
+ON site_visitors(first_seen_at);
+CREATE INDEX IF NOT EXISTS idx_inquiries_created_at
+ON inquiries(created_at)
+`;
+
 export const createContentItemsTable = `
 CREATE TABLE IF NOT EXISTS content_items (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
