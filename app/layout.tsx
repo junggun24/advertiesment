@@ -10,11 +10,13 @@ import './design-refresh.css';
 import { getContentItems } from '@/lib/content-data';
 import {
   defaultSeoSettings,
+  COMPANY_FOUNDING_YEAR,
   PUBLIC_SITE_URL,
   type SeoSettings,
 } from '@/lib/content-types';
 import { AttributionTracker } from '@/components/attribution-tracker';
 import { getSiteSettings } from '@/lib/site-settings-data';
+import { searchVerificationMetadata } from '@/lib/search-verification';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [saved] = await getContentItems<SeoSettings>('seo');
@@ -25,6 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: seo.description,
     alternates: { canonical: '/' },
     keywords: seo.keywords,
+    verification: searchVerificationMetadata(seo),
     openGraph: {
       type: 'website',
       locale: 'ko_KR',
@@ -64,7 +67,8 @@ export default async function RootLayout({
       {
         '@type': 'Organization',
         '@id': `${PUBLIC_SITE_URL}/#organization`,
-        name: '주식회사 오아이씨코리아',
+        name: site.companyName,
+        foundingDate: String(COMPANY_FOUNDING_YEAR),
         url: `${PUBLIC_SITE_URL}/`,
         logo: `${PUBLIC_SITE_URL}/oic/logo.png`,
         image: `${PUBLIC_SITE_URL}/oic/logo.png`,
@@ -80,9 +84,7 @@ export default async function RootLayout({
         sameAs: ['https://www.oickorea.com/'],
         address: {
           '@type': 'PostalAddress',
-          streetAddress: '안남로 369번길 12, 5층',
-          addressLocality: '부평구',
-          addressRegion: '인천광역시',
+          streetAddress: site.address,
           addressCountry: 'KR',
         },
       },

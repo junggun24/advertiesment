@@ -17,6 +17,7 @@
     "test:local": "node scripts/smoke-cloudflare-local.mjs",
     "test:unit": "node --test test/*.test.ts",
     "test:production": "node scripts/smoke-production.mjs",
+    "audit:indexing": "node scripts/audit-indexing.mjs",
     "build": "vinext build",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",

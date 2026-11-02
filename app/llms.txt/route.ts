@@ -1,4 +1,4 @@
-import { PUBLIC_SITE_URL } from '@/lib/content-types';
+import { COMPANY_FOUNDING_YEAR, PUBLIC_SITE_URL } from '@/lib/content-types';
 import { getSiteSettings } from '@/lib/site-settings-data';
 
 export async function GET() {
@@ -19,8 +19,9 @@ export async function GET() {
 
 ## 회사 정보
 
-- 회사명: 주식회사 오아이씨코리아
-- 주소: 인천광역시 부평구 안남로 369번길 12, 5층
+- 회사명: ${site.companyName}
+- 설립연도: ${COMPANY_FOUNDING_YEAR}년
+- 주소: ${site.address}
 - 제품·견적 상담: ${site.consultantPhone}
 - 이메일: ${site.consultantEmail}
 `;

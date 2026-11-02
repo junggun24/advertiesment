@@ -38,7 +38,11 @@ export default async function ProfilePage() {
     '@type': 'Person',
     name: personName(profile.consultantName),
     jobTitle: `${profile.consultantDepartment} · ${profile.consultantRole}`,
-    worksFor: { '@type': 'Organization', name: '주식회사 오아이씨코리아' },
+    worksFor: {
+      '@type': 'Organization',
+      '@id': `${PUBLIC_SITE_URL}/#organization`,
+      name: profile.companyName,
+    },
     email: profile.consultantEmail,
     telephone: profile.consultantPhone,
     description: profile.consultantIntroduction,

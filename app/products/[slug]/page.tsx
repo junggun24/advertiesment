@@ -2,7 +2,13 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { cases, getProduct, type CaseStudy, type Product } from '@/lib/catalog';
+import {
+  cases,
+  getProduct,
+  PUBLIC_PRICE_NOTICE,
+  type CaseStudy,
+  type Product,
+} from '@/lib/catalog';
 import {
   getContentItems,
   getContentRecords,
@@ -223,8 +229,8 @@ export default async function ProductDetail({
             <small>PROCUREMENT MODELS</small>
             <h2>등록 모델 사양과 가격</h2>
             <p>
-              관리자가 확인한 조달 제품 데이터를 기준으로 표시합니다. 실제
-              설치비와 부대 공사는 현장 조건에 따라 달라질 수 있습니다.
+              관리자가 확인한 조달 제품 데이터를 기준으로 표시합니다.{' '}
+              {PUBLIC_PRICE_NOTICE}
             </p>
           </div>
           <div className="model-table-wrap">
@@ -234,7 +240,7 @@ export default async function ProductDetail({
                   <th>모델</th>
                   <th>물품식별번호</th>
                   <th>주요 사양</th>
-                  <th>등록가격</th>
+                  <th>등록가격 (부가세 포함)</th>
                 </tr>
               </thead>
               <tbody>
@@ -294,6 +300,7 @@ export default async function ProductDetail({
         <article>
           <h2>가격 안내</h2>
           <strong>{product.price || '상담 후 안내'}</strong>
+          <p>{PUBLIC_PRICE_NOTICE}</p>
           <p>설치 환경과 규격 확인 후 정확한 범위를 안내합니다.</p>
         </article>
       </section>

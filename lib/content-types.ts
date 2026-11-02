@@ -28,8 +28,10 @@ export type SiteSettings = {
   consultantImage: string;
   consultantIntroduction: string;
 };
+export const COMPANY_FOUNDING_YEAR = 2011;
+
 export const defaultSiteSettings: SiteSettings = {
-  companyName: '(주)오아이씨코리아',
+  companyName: '주식회사 오아이씨코리아',
   phone: '032-719-7947',
   email: 'jeromes@oickorea.com',
   address: '인천광역시 부평구 안남로369번길 12 (청천동, 오아이씨코리아 사옥)',
@@ -50,7 +52,11 @@ export const defaultSiteSettings: SiteSettings = {
 };
 export function mergeSiteSettings(saved?: Partial<SiteSettings> | null) {
   const merged = { ...defaultSiteSettings, ...saved };
-  return { ...merged, email: merged.consultantEmail };
+  return {
+    ...merged,
+    companyName: merged.companyName.replace(/^\(주\)\s*/, '주식회사 '),
+    email: merged.consultantEmail,
+  };
 }
 export type SeoSettings = {
   siteName: string;
@@ -63,6 +69,9 @@ export type SeoSettings = {
   ogDescription: string;
   ogImage: string;
   allowIndexing: boolean;
+  googleVerification: string;
+  naverVerification: string;
+  bingVerification: string;
 };
 export const PUBLIC_SITE_URL = 'https://dsko.co.kr';
 export const defaultSeoSettings: SeoSettings = {
@@ -84,4 +93,7 @@ export const defaultSeoSettings: SeoSettings = {
     '안내전광판, 멀티비전, 옥외용 키오스크를 기획부터 설치까지 맞춤 제작합니다.',
   ogImage: '/oic/prod-notice.jpg',
   allowIndexing: true,
+  googleVerification: '6ncoafD6-uuMkdUGuN7nJofWZUpHItvfjYr7bPMeFvg',
+  naverVerification: '',
+  bingVerification: '',
 };

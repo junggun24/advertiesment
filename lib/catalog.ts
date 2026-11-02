@@ -1,3 +1,6 @@
+export const PUBLIC_PRICE_NOTICE =
+  '표시 금액은 부가세 포함이며, 설치비·부속품·인테리어 비용은 별도입니다.';
+
 export type Product = {
   slug: string;
   name: string;

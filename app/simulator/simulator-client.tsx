@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Calculator, CheckCircle2, Info, RotateCcw } from 'lucide-react';
 import type { DisplayModel } from '@/lib/display-models';
+import { PUBLIC_PRICE_NOTICE } from '@/lib/catalog';
 
 const money = (value: number) =>
   new Intl.NumberFormat('ko-KR').format(Math.round(value));
@@ -317,7 +318,7 @@ export function SimulatorClient({
           </header>
           <dl>
             <Spec
-              label="조달등록가격"
+              label="조달등록가격 (부가세 포함)"
               value={`${money(model.registered_price)}원`}
             />
             <Spec
@@ -400,8 +401,9 @@ export function SimulatorClient({
             </div>
           </dl>
           <p>
-            제품 조달등록가격과 수수료만 계산한 참고 금액입니다. 설치 구조물,
-            전기·통신 공사, 운송비와 현장 조건에 따른 비용은 별도일 수 있습니다.
+            {PUBLIC_PRICE_NOTICE} 제품 조달등록가격과 수수료만 계산한 참고
+            금액입니다. 운송비 등 현장 조건에 따른 추가 비용은 별도일 수
+            있습니다.
           </p>
           <Link href={inquiryHref}>이 구성으로 정확한 견적 문의</Link>
         </article>

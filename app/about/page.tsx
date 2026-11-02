@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { pageMetadata } from '@/lib/seo-metadata';
 import { getSiteSettings } from '@/lib/site-settings-data';
+import { COMPANY_FOUNDING_YEAR } from '@/lib/content-types';
 
 export const metadata = pageMetadata({
   title: '회사소개',
@@ -25,8 +26,9 @@ export default async function AboutPage() {
             제대로 보이게 만듭니다.
           </h1>
           <p>
-            오아이씨코리아는 2011년 설립 이래 디스플레이 산업의 기술 발전과 ICT
-            융합 환경에 발맞춰 성장해 온 디스플레이 솔루션 전문 기업입니다.
+            오아이씨코리아는 {COMPANY_FOUNDING_YEAR}년 설립 이래 디스플레이
+            산업의 기술 발전과 ICT 융합 환경에 발맞춰 성장해 온 디스플레이
+            솔루션 전문 기업입니다.
           </p>
         </div>
         <figure>
@@ -87,16 +89,12 @@ export default async function AboutPage() {
       <section className="company-facts">
         <div>
           <p className="eyebrow light">COMPANY INFORMATION</p>
-          <h2>
-            주식회사
-            <br />
-            오아이씨코리아
-          </h2>
+          <h2>{site.companyName}</h2>
         </div>
         <dl>
           <div>
             <dt>본사</dt>
-            <dd>인천광역시 부평구 안남로369번길 12 오아이씨코리아 사옥</dd>
+            <dd>{site.address}</dd>
           </div>
           <div>
             <dt>대표전화</dt>

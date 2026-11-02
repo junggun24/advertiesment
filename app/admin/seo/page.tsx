@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, Save } from 'lucide-react';
 import {
   defaultSeoSettings,
+  PUBLIC_SITE_URL,
   type SeoSettings,
   type ContentItem,
 } from '@/lib/content-types';
@@ -197,6 +198,58 @@ export default function SeoAdminPage() {
                 <small>끄면 사이트 전체가 noindex 처리됩니다.</small>
               </span>
             </label>
+          </section>
+          <section>
+            <h2>검색엔진 소유권 인증</h2>
+            <p>
+              각 검색엔진에서 HTML 태그 인증을 선택하고 content 속성의 코드만
+              입력하세요. 저장 후 해당 서비스에서 소유권 확인을 완료해야 합니다.
+            </p>
+            <label>
+              Google Search Console 인증코드
+              <input
+                value={seo.googleVerification}
+                onChange={(e) => update('googleVerification', e.target.value)}
+              />
+              <small>URL 접두어 속성의 HTML 태그 인증용입니다.</small>
+            </label>
+            <label>
+              네이버 서치어드바이저 인증코드
+              <input
+                value={seo.naverVerification}
+                onChange={(e) => update('naverVerification', e.target.value)}
+              />
+            </label>
+            <label>
+              Bing Webmaster Tools 인증코드
+              <input
+                value={seo.bingVerification}
+                onChange={(e) => update('bingVerification', e.target.value)}
+              />
+            </label>
+            <p>
+              인증코드가 입력돼 있어도 소유권 확인이나 실제 색인이 완료된 것은
+              아닙니다. 인증 후 각 서비스에 사이트맵을 제출하세요.
+            </p>
+            <p>
+              사이트맵:{' '}
+              <a href={`${PUBLIC_SITE_URL}/sitemap.xml`}>
+                {PUBLIC_SITE_URL}/sitemap.xml
+              </a>
+            </p>
+            <nav aria-label="검색엔진 등록 도구">
+              <a href="https://search.google.com/search-console">
+                Google Search Console
+              </a>
+              {' · '}
+              <a href="https://searchadvisor.naver.com/">
+                네이버 서치어드바이저
+              </a>
+              {' · '}
+              <a href="https://www.bing.com/webmasters/">
+                Bing Webmaster Tools
+              </a>
+            </nav>
           </section>
         </div>
         {notice && <p className="seo-notice">{notice}</p>}

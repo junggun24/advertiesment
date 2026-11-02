@@ -18,7 +18,7 @@ void test('fills new consultant fields for existing site records', () => {
 });
 
 void test('uses the approved footer company information by default', () => {
-  assert.equal(defaultSiteSettings.companyName, '(주)오아이씨코리아');
+  assert.equal(defaultSiteSettings.companyName, '주식회사 오아이씨코리아');
   assert.equal(
     defaultSiteSettings.address,
     '인천광역시 부평구 안남로369번길 12 (청천동, 오아이씨코리아 사옥)',

@@ -1,12 +1,19 @@
 import { Check, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
-import { products, cases, type Product, type CaseStudy } from '@/lib/catalog';
+import {
+  products,
+  cases,
+  PUBLIC_PRICE_NOTICE,
+  type Product,
+  type CaseStudy,
+} from '@/lib/catalog';
 import { formatCaseDisplaySize } from '@/lib/case-categories';
 import { HomeHeroCarousel } from '@/components/home-hero-carousel';
 import { InquiryForm } from '@/components/inquiry-form';
 import { ResponsiveImage } from '@/components/responsive-image';
 import { getContentItems, mergeBySlug } from '@/lib/content-data';
 import { getSiteSettings } from '@/lib/site-settings-data';
+import { COMPANY_FOUNDING_YEAR } from '@/lib/content-types';
 import './home.css';
 const steps = [
   ['상담 접수', '장소와 목적, 일정과 예산을 확인합니다.'],
@@ -56,8 +63,8 @@ export default async function Home() {
       </section>
       <section className="proof-strip">
         <div>
-          <b>20년+</b>
-          <span>디스플레이 제조 업력</span>
+          <b>{COMPANY_FOUNDING_YEAR}년 설립</b>
+          <span>디스플레이 전문 기업</span>
         </div>
         <div>
           <b>{caseItems.length}곳+</b>
@@ -109,7 +116,7 @@ export default async function Home() {
           ))}
         </div>
         <p className="section-note">
-          설치비는 현장마다 다릅니다. 현장 실사 후 정확히 산출해 드립니다.
+          {PUBLIC_PRICE_NOTICE} 현장 실사 후 정확한 견적을 안내합니다.
         </p>
       </section>
       <section className="design-section task-section">

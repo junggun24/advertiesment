@@ -4,13 +4,17 @@ import { PUBLIC_SITE_URL } from '@/lib/content-types';
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: '*', allow: '/', disallow: ['/api/'] },
-      { userAgent: 'OAI-SearchBot', allow: '/', disallow: ['/api/'] },
-      { userAgent: 'ChatGPT-User', allow: '/', disallow: ['/api/'] },
-      { userAgent: 'PerplexityBot', allow: '/', disallow: ['/api/'] },
-      { userAgent: 'ClaudeBot', allow: '/', disallow: ['/api/'] },
-      { userAgent: 'Google-Extended', allow: '/', disallow: ['/api/'] },
-    ],
+      '*',
+      'OAI-SearchBot',
+      'ChatGPT-User',
+      'PerplexityBot',
+      'ClaudeBot',
+      'Google-Extended',
+    ].map((userAgent) => ({
+      userAgent,
+      allow: ['/', '/api/uploads/'],
+      disallow: ['/api/', '/api/uploads/private/'],
+    })),
     sitemap: `${PUBLIC_SITE_URL}/sitemap.xml`,
   };
 }
