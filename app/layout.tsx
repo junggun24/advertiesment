@@ -27,7 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description: seo.description,
     alternates: { canonical: '/' },
     keywords: seo.keywords,
-    verification: searchVerificationMetadata(seo),
     openGraph: {
       type: 'website',
       locale: 'ko_KR',
@@ -60,7 +59,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const site = await getSiteSettings();
+  const [site, [savedSeo]] = await Promise.all([
+    getSiteSettings(),
+    getContentItems<SeoSettings>('seo'),
+  ]);
+  const verification = searchVerificationMetadata({
+    ...defaultSeoSettings,
+    ...savedSeo,
+  });
   const schema = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -102,6 +108,13 @@ export default async function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="shortcut icon" href="/favicon.svg" />
+        {/* Ownership checks require these tags in the initial head, before streamed metadata. */}
+        {verification.google && (
+          <meta name="google-site-verification" content={verification.google} />
+        )}
+        {Object.entries(verification.other).map(([name, content]) => (
+          <meta key={name} name={name} content={content} />
+        ))}
       </head>
       <body>
         <AttributionTracker />

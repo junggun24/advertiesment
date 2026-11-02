@@ -1,5 +1,4 @@
-const origin =
-  process.env.PRODUCTION_ORIGIN || 'https://dsko.co.kr';
+const origin = process.env.PRODUCTION_ORIGIN || 'https://dsko.co.kr';
 
 async function check(path, validate) {
   const response = await fetch(`${origin}${path}`, {
@@ -30,7 +29,9 @@ results.home = await check('/', async (response) => {
     throw new Error('MIME 스니핑 방지 헤더가 없습니다.');
   if (headers.get('x-frame-options') !== 'DENY')
     throw new Error('클릭재킹 방지 헤더가 없습니다.');
-  if (!headers.get('content-security-policy')?.includes("frame-ancestors 'none'"))
+  if (
+    !headers.get('content-security-policy')?.includes("frame-ancestors 'none'")
+  )
     throw new Error('프레임 삽입 방지 정책이 없습니다.');
   if (headers.get('referrer-policy') !== 'strict-origin-when-cross-origin')
     throw new Error('Referrer 정책이 올바르지 않습니다.');
@@ -39,6 +40,13 @@ results.home = await check('/', async (response) => {
   const html = await response.text();
   if (!html.includes('오아이씨코리아'))
     throw new Error('메인 페이지 내용이 올바르지 않습니다.');
+  const head = html.split(/<\/head>/i)[0];
+  if (
+    !/<meta\b[^>]*name="google-site-verification"[^>]*content="[^"]+"/i.test(
+      head,
+    )
+  )
+    throw new Error('Google 소유권 인증 태그가 홈페이지 head에 없습니다.');
 });
 results.health = await check('/api/health', async (response) => {
   const data = await response.json();
@@ -55,11 +63,7 @@ results.sitemap = await check('/sitemap.xml', async (response) => {
 });
 results.adminLogin = await check('/admin/login');
 for (const [key, path, title] of [
-  [
-    'products',
-    '/products',
-    '안내전광판·멀티비전·옥외 키오스크 제품',
-  ],
+  ['products', '/products', '안내전광판·멀티비전·옥외 키오스크 제품'],
   ['cases', '/cases', '안내전광판·멀티비전 설치 사례'],
   ['info', '/info', '안내전광판 가격·설치·나라장터 정보'],
 ]) {
