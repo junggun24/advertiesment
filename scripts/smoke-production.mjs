@@ -25,9 +25,12 @@ function assertCanonicalInHead(html, path) {
 
 function assertMetadata(html, path, title) {
   assertCanonicalInHead(html, path);
+  const ogTitle = html
+    .match(/<meta\b[^>]*property="og:title"[^>]*>/i)?.[0]
+    .match(/content="([^"]*)"/i)?.[1];
   if (
     !html.includes(`<title>${title} | 오아이씨코리아</title>`) ||
-    !html.includes(`<meta property="og:title" content="${title}">`) ||
+    ogTitle !== title ||
     !html.includes('href="/favicon.svg"')
   ) {
     throw new Error(`${path}: 메타데이터 또는 favicon이 올바르지 않습니다.`);
