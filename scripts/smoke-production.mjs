@@ -10,12 +10,24 @@ async function check(path, validate) {
   return response.status;
 }
 
+function assertCanonicalInHead(html, path) {
+  const head = html.split(/<\/head>/i)[0];
+  const tags = [...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*>/gi)];
+  const href = tags[0]?.[0].match(/href="([^"]+)"/i)?.[1];
+  if (
+    tags.length !== 1 ||
+    !head.includes(tags[0][0]) ||
+    !href ||
+    new URL(href).href !== new URL(path, origin).href
+  )
+    throw new Error(`${path}: canonical이 head에 없거나 주소가 잘못됐습니다.`);
+}
+
 function assertMetadata(html, path, title) {
-  const canonical = `${origin}${path}`;
+  assertCanonicalInHead(html, path);
   if (
     !html.includes(`<title>${title} | 오아이씨코리아</title>`) ||
     !html.includes(`<meta property="og:title" content="${title}">`) ||
-    !html.includes(`<link rel="canonical" href="${canonical}">`) ||
     !html.includes('href="/favicon.svg"')
   ) {
     throw new Error(`${path}: 메타데이터 또는 favicon이 올바르지 않습니다.`);
@@ -40,6 +52,7 @@ results.home = await check('/', async (response) => {
   const html = await response.text();
   if (!html.includes('오아이씨코리아'))
     throw new Error('메인 페이지 내용이 올바르지 않습니다.');
+  assertCanonicalInHead(html, '/');
   const head = html.split(/<\/head>/i)[0];
   if (
     !/<meta\b[^>]*name="google-site-verification"[^>]*content="[^"]+"/i.test(
@@ -81,6 +94,35 @@ results.simulator = await check('/simulator', async (response) => {
     throw new Error('사양 계산기의 서버 렌더링 본문이 올바르지 않습니다.');
   }
 });
+results.productDetail = await check(
+  '/products/information-led-board',
+  async (response) => {
+    assertCanonicalInHead(
+      await response.text(),
+      '/products/information-led-board',
+    );
+  },
+);
+results.caseDetail = await check(
+  '/cases/public-office-board',
+  async (response) => {
+    const html = await response.text();
+    assertCanonicalInHead(html, '/cases/public-office-board');
+    const graph = [
+      ...html.matchAll(
+        /<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi,
+      ),
+    ].flatMap((match) => {
+      const schema = JSON.parse(match[1]);
+      return schema['@graph'] ?? [schema];
+    });
+    const article = graph.find((node) => node['@type'] === 'Article');
+    if (!article || !article.about?.url || article.about['@type'] === 'Product')
+      throw new Error(
+        '설치사례의 Article 또는 관련 제품 주제 정보가 올바르지 않습니다.',
+      );
+  },
+);
 results.models = await check('/api/models', async (response) => {
   const data = await response.json();
   if (!Array.isArray(data.models) || data.models.length < 1) {

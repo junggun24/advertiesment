@@ -120,7 +120,7 @@ export default async function CaseDetail({
         },
         about: product
           ? {
-              '@type': 'Product',
+              '@type': 'Thing',
               name: product.name,
               url: `${PUBLIC_SITE_URL}/products/${product.slug}`,
             }

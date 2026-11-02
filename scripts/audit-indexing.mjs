@@ -97,7 +97,11 @@ try {
       const tags = [...html.matchAll(/<(?:meta|link)\b[^>]*>/gi)].map((match) =>
         attributes(match[0]),
       );
-      const canonical = tags.find((tag) => tag.rel === 'canonical')?.href;
+      const headTags = [
+        ...html.split(/<\/head>/i)[0].matchAll(/<(?:meta|link)\b[^>]*>/gi),
+      ].map((match) => attributes(match[0]));
+      const canonicalTags = tags.filter((tag) => tag.rel === 'canonical');
+      const canonical = headTags.find((tag) => tag.rel === 'canonical')?.href;
       const robotsDirectives = tags
         .filter((tag) => /^(robots|googlebot)$/i.test(tag.name || ''))
         .map((tag) => tag.content)
@@ -108,6 +112,8 @@ try {
         normalized(canonical) !== normalized(new URL(path, origin).href)
       )
         issues.push('canonical 불일치 또는 누락');
+      if (canonicalTags.length !== 1)
+        issues.push('canonical 태그가 없거나 중복됨');
       if (
         /\b(noindex|none)\b/i.test(
           `${robotsDirectives},${response.headers.get('x-robots-tag') || ''}`,
@@ -118,13 +124,17 @@ try {
         issues.push('사이트맵 누락');
       if (!/<title>[^<]+<\/title>/i.test(html) || !/<h1\b/i.test(html))
         issues.push('제목 또는 H1 누락');
-      report.pages.push({ path, status: response.status, canonical, issues });
+      report.pages.push({
+        path,
+        status: response.status,
+        canonical,
+        canonicalInHead: Boolean(canonical),
+        canonicalCount: canonicalTags.length,
+        issues,
+      });
       for (const issue of issues) report.errors.push(`${path}: ${issue}`);
 
       if (path === '/') {
-        const headTags = [
-          ...html.split(/<\/head>/i)[0].matchAll(/<meta\b[^>]*>/gi),
-        ].map((match) => attributes(match[0]));
         for (const name of [
           'google-site-verification',
           'naver-site-verification',
