@@ -169,7 +169,7 @@ export default async function CaseDetail({
         {item.image && (
           <ResponsiveImage
             src={item.image}
-            alt={`${item.title} 설치 구성 예시`}
+            alt={`${item.title} 실제 설치 현장`}
             width={1200}
             height={800}
             priority

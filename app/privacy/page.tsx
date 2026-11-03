@@ -2,12 +2,14 @@ import Link from 'next/link';
 import { pageMetadata } from '@/lib/seo-metadata';
 import { getSiteSettings } from '@/lib/site-settings-data';
 
-export const metadata = pageMetadata({
-  title: '개인정보 처리 안내',
-  description:
-    '오아이씨코리아 견적 문의 과정에서 수집하는 개인정보와 이용 목적을 안내합니다.',
-  path: '/privacy',
-});
+export function generateMetadata() {
+  return pageMetadata({
+    title: '개인정보 처리 안내',
+    description:
+      '오아이씨코리아 견적 문의 과정에서 수집하는 개인정보와 이용 목적을 안내합니다.',
+    path: '/privacy',
+  });
+}
 
 export default async function PrivacyPage() {
   const site = await getSiteSettings();

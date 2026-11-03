@@ -5,12 +5,14 @@ import { prepareEditorHtml } from '@/lib/editor-content';
 import './seo-content.css';
 import { pageMetadata } from '@/lib/seo-metadata';
 
-export const metadata = pageMetadata({
-  title: '안내전광판 가격·설치·나라장터 정보',
-  description:
-    '안내전광판, 멀티비전, 옥외용 키오스크의 가격, 규격, 설치, 나라장터 구매와 A/S 질문에 답합니다.',
-  path: '/info',
-});
+export function generateMetadata() {
+  return pageMetadata({
+    title: '안내전광판 가격·설치·나라장터 정보',
+    description:
+      '안내전광판, 멀티비전, 옥외용 키오스크의 가격, 규격, 설치, 나라장터 구매와 A/S 질문에 답합니다.',
+    path: '/info',
+  });
+}
 
 type FaqData = {
   tag: string;

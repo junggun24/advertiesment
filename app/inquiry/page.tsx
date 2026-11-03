@@ -3,12 +3,14 @@ import { InquiryForm } from '@/components/inquiry-form';
 import { pageMetadata } from '@/lib/seo-metadata';
 import { getSiteSettings } from '@/lib/site-settings-data';
 
-export const metadata = pageMetadata({
-  title: '제품·견적 문의',
-  description:
-    '안내전광판, 멀티비전, 옥외용 키오스크 설치 장소와 목적을 남기면 필요한 규격과 견적 범위를 안내합니다.',
-  path: '/inquiry',
-});
+export function generateMetadata() {
+  return pageMetadata({
+    title: '제품·견적 문의',
+    description:
+      '안내전광판, 멀티비전, 옥외용 키오스크 설치 장소와 목적을 남기면 필요한 규격과 견적 범위를 안내합니다.',
+    path: '/inquiry',
+  });
+}
 
 export default async function InquiryPage() {
   const site = await getSiteSettings();

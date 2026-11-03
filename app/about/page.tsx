@@ -5,13 +5,15 @@ import { pageMetadata } from '@/lib/seo-metadata';
 import { getSiteSettings } from '@/lib/site-settings-data';
 import { COMPANY_FOUNDING_YEAR } from '@/lib/content-types';
 
-export const metadata = pageMetadata({
-  title: '회사소개',
-  description:
-    '인천 사옥을 기반으로 공공 안내전광판, 멀티비전, 옥외용 키오스크를 기획·제작·설치하는 오아이씨코리아를 소개합니다.',
-  path: '/about',
-  image: '/oic/company-building.jpg',
-});
+export function generateMetadata() {
+  return pageMetadata({
+    title: '회사소개',
+    description:
+      '인천 사옥을 기반으로 공공 안내전광판, 멀티비전, 옥외용 키오스크를 기획·제작·설치하는 오아이씨코리아를 소개합니다.',
+    path: '/about',
+    image: '/oic/company-building.jpg',
+  });
+}
 
 export default async function AboutPage() {
   const site = await getSiteSettings();

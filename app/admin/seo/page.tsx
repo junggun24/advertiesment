@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, Save } from 'lucide-react';
 import {
   defaultSeoSettings,
+  customSeoShareImage,
   PUBLIC_SITE_URL,
   type SeoSettings,
   type ContentItem,
@@ -30,7 +31,11 @@ export default function SeoAdminPage() {
         const saved = data.items?.[0];
         if (saved) {
           setItem(saved);
-          setSeo({ ...defaultSeoSettings, ...saved.data });
+          setSeo({
+            ...defaultSeoSettings,
+            ...saved.data,
+            ogImage: customSeoShareImage(saved.data.ogImage ?? ''),
+          });
         }
         setNotice('');
       })
@@ -175,10 +180,14 @@ export default function SeoAdminPage() {
             <label>
               공유 이미지 경로
               <input
-                required
                 value={seo.ogImage}
                 onChange={(e) => update('ogImage', e.target.value)}
+                placeholder="비워두면 대표 설치사례 사진 자동 사용"
               />
+              <small>
+                비워두면 홈페이지는 대표 설치사례 사진을 사용합니다. 별도
+                이미지가 필요할 때만 경로를 입력하세요.
+              </small>
             </label>
             <div className="seo-preview">
               <small>검색 결과 미리보기</small>

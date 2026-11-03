@@ -74,6 +74,10 @@ export type SeoSettings = {
   bingVerification: string;
 };
 export const PUBLIC_SITE_URL = 'https://dsko.co.kr';
+export function customSeoShareImage(value: string) {
+  const image = value.trim();
+  return image === '/oic/prod-notice.jpg' ? '' : image;
+}
 export const defaultSeoSettings: SeoSettings = {
   siteName: '오아이씨코리아',
   siteUrl: PUBLIC_SITE_URL,
@@ -91,7 +95,7 @@ export const defaultSeoSettings: SeoSettings = {
   ogTitle: '공공 디스플레이 맞춤 제작 | 오아이씨코리아',
   ogDescription:
     '안내전광판, 멀티비전, 옥외용 키오스크를 기획부터 설치까지 맞춤 제작합니다.',
-  ogImage: '/oic/prod-notice.jpg',
+  ogImage: '',
   allowIndexing: true,
   googleVerification: '6ncoafD6-uuMkdUGuN7nJofWZUpHItvfjYr7bPMeFvg',
   naverVerification: '',

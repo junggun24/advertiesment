@@ -10,6 +10,7 @@ import './design-refresh.css';
 import { getContentItems } from '@/lib/content-data';
 import {
   defaultSeoSettings,
+  customSeoShareImage,
   COMPANY_FOUNDING_YEAR,
   PUBLIC_SITE_URL,
   type SeoSettings,
@@ -17,10 +18,18 @@ import {
 import { AttributionTracker } from '@/components/attribution-tracker';
 import { getSiteSettings } from '@/lib/site-settings-data';
 import { searchVerificationMetadata } from '@/lib/search-verification';
+import { getRepresentativeCaseImage } from '@/lib/representative-case-image';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [saved] = await getContentItems<SeoSettings>('seo');
   const seo = { ...defaultSeoSettings, ...saved };
+  const customImage = customSeoShareImage(seo.ogImage);
+  const image = customImage
+    ? { url: customImage, alt: seo.ogTitle }
+    : ((await getRepresentativeCaseImage()) ?? {
+        url: '/oic/case-1.jpg',
+        alt: '오아이씨코리아 디스플레이 설치 현장',
+      });
   return {
     metadataBase: new URL(seo.siteUrl),
     title: { default: seo.title, template: seo.titleTemplate },
@@ -34,13 +43,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: '/',
       title: seo.ogTitle,
       description: seo.ogDescription,
-      images: [{ url: seo.ogImage, alt: seo.ogTitle }],
+      images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title: seo.ogTitle,
       description: seo.ogDescription,
-      images: [seo.ogImage],
+      images: [image.url],
     },
     robots: {
       index: seo.allowIndexing,

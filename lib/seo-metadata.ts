@@ -1,21 +1,31 @@
 import type { Metadata } from 'next';
 import { PUBLIC_SITE_URL } from '@/lib/content-types';
+import { getRepresentativeCaseImage } from './representative-case-image';
 
 export function absoluteSiteUrl(value: string) {
   return new URL(value, PUBLIC_SITE_URL).toString();
 }
 
-export function pageMetadata({
+export async function pageMetadata({
   title,
   description,
   path,
-  image = '/oic/prod-notice.jpg',
+  image,
 }: {
   title: string;
   description: string;
   path: string;
   image?: string;
-}): Metadata {
+}): Promise<Metadata> {
+  const caseImage = image
+    ? undefined
+    : await getRepresentativeCaseImage(
+        undefined,
+        path === '/cases' ? 'exyangyang' : 'public-office-board',
+      );
+  const shareImage = image
+    ? { url: image, alt: title }
+    : (caseImage ?? { url: '/oic/case-1.jpg', alt: title });
   return {
     title,
     description,
@@ -27,13 +37,13 @@ export function pageMetadata({
       title,
       description,
       url: path,
-      images: [{ url: image, alt: title }],
+      images: [shareImage],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [image],
+      images: [shareImage.url],
     },
   };
 }

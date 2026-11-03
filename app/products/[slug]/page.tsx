@@ -18,6 +18,7 @@ import { prepareEditorHtml, resolveContentImage } from '@/lib/editor-content';
 import { getDisplayModels } from '@/lib/display-model-data';
 import { PUBLIC_SITE_URL } from '@/lib/content-types';
 import { absoluteSiteUrl } from '@/lib/seo-metadata';
+import { getRepresentativeCaseImage } from '@/lib/representative-case-image';
 import { ResponsiveImage } from '@/components/responsive-image';
 import '../../detail-seo.css';
 
@@ -45,7 +46,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const saved = await storedProduct(slug);
   const product = saved?.product ?? getProduct(slug);
-  const image = product?.image || '/oic/prod-notice.jpg';
+  const caseImage = product
+    ? await getRepresentativeCaseImage(slug)
+    : undefined;
+  const image = caseImage ?? {
+    url: product?.image || '/oic/prod-notice.jpg',
+    alt: `${product?.name ?? '디스플레이'} 제품 이미지`,
+  };
   return product
     ? {
         title: `${product.name} 규격·가격·설치 정보`,
@@ -57,13 +64,13 @@ export async function generateMetadata({
           description: product.summary,
           locale: 'ko_KR',
           siteName: '오아이씨코리아',
-          images: [{ url: image, alt: `${product.name} 제품 이미지` }],
+          images: [image],
         },
         twitter: {
           card: 'summary_large_image',
           title: `${product.name} 규격·가격·설치 정보`,
           description: product.summary,
-          images: [image],
+          images: [image.url],
         },
       }
     : {
