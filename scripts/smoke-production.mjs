@@ -76,6 +76,26 @@ results.sitemap = await check('/sitemap.xml', async (response) => {
   if (!xml.includes('https://dsko.co.kr/') || xml.includes('workers.dev')) {
     throw new Error('사이트맵 주소가 운영 도메인과 일치하지 않습니다.');
   }
+  const images = [...xml.matchAll(/<image:loc>([^<]+)<\/image:loc>/g)];
+  if (
+    !xml.includes(
+      'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"',
+    ) ||
+    !images.length
+  )
+    throw new Error('사이트맵에 검색용 이미지 주소가 없습니다.');
+  for (const [, image] of images) {
+    const url = new URL(image.replaceAll('&amp;', '&'));
+    const pathname = decodeURIComponent(url.pathname);
+    if (
+      url.origin !== 'https://dsko.co.kr' ||
+      (pathname.startsWith('/api/') &&
+        !pathname.startsWith('/api/uploads/uploads/'))
+    )
+      throw new Error(
+        '이미지 사이트맵에 비공개 또는 외부 주소가 포함되어 있습니다.',
+      );
+  }
 });
 results.adminLogin = await check('/admin/login');
 for (const [key, path, title] of [
