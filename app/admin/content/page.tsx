@@ -19,6 +19,7 @@ import { extractFirstImage } from '@/lib/editor-content';
 import { contentQualityIssues } from '@/lib/content-quality';
 import { imageUploadFormData, prepareImageUpload } from '@/lib/client-image';
 import { CASE_PURPOSES } from '@/lib/case-categories';
+import { CasePurposeExport } from '@/components/case-purpose-export';
 import './upload.css';
 import './seo-fields.css';
 
@@ -462,6 +463,7 @@ export default function ContentAdminPage() {
           </button>
         ))}
       </nav>
+      {type === 'case' && <CasePurposeExport items={items} />}
       <section className="content-admin-workspace">
         <aside className="content-admin-list">
           <button

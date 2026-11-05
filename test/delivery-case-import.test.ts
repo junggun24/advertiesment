@@ -52,6 +52,17 @@ function normalizedRow(overrides: Record<string, unknown> = {}, rowNumber = 2) {
   return normalizeDeliveryCaseRow(sourceValues(overrides), rowNumber);
 }
 
+void test('accepts industrial safety training as an installation purpose', () => {
+  assert.equal(
+    normalizedRow({ '설치 목적': '산업안전교육' }).data.purpose,
+    '산업안전교육',
+  );
+  assert.throws(
+    () => normalizedRow({ '설치 목적': '시설환경개선' }),
+    /알 수 없는 설치 목적/,
+  );
+});
+
 void test('normalizes mapped fields while preserving arrays and source labels', () => {
   const row = normalizedRow({
     '도입 수요기관 도로명(U열)': ' 서울시 중구 1 \r\n서울시 중구 2 ',

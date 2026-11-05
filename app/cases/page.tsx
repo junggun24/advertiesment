@@ -43,8 +43,8 @@ export default async function CasesPage() {
           설치 구성을 확인하세요.
         </h1>
         <p>
-          설치 목적을 먼저 고르면 비슷한 표현으로 등록된 사례도 한 번에 확인할
-          수 있습니다.
+          설치 목적을 선택하면 해당 목적으로 등록된 설치사례만 확인할 수
+          있습니다.
         </p>
       </section>
       <CaseCatalog items={catalogItems} />

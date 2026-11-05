@@ -303,9 +303,10 @@ body {
 }
 .design-product-grid img {
   width: 100%;
+  height: auto;
   display: block;
   aspect-ratio: 3/2;
-  object-fit: cover;
+  object-fit: contain;
 }
 .design-product-grid > a > div {
   padding: 24px 28px 28px;

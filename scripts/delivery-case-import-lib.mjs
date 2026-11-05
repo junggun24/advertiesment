@@ -41,7 +41,7 @@ const ALLOWED_PURPOSES = new Set([
   '행정홍보안내',
   '교육환경개선',
   '안전재난관제',
-  '시설환경개선',
+  '산업안전교육',
 ]);
 const ALLOWED_PRODUCT_SLUGS = new Set([
   'information-led-board',

@@ -2,20 +2,29 @@ export const CASE_PURPOSES = [
   '행정홍보안내',
   '교육환경개선',
   '안전재난관제',
-  '시설환경개선',
+  '산업안전교육',
 ] as const;
 
 export type CasePurpose = (typeof CASE_PURPOSES)[number];
 
-const legacyPurposeTerms: Record<CasePurpose, string[]> = {
-  행정홍보안내: ['행정홍보안내', '행정', '시정', '홍보', '행사', '안내'],
-  교육환경개선: ['교육환경개선', '교육', '학교', '문화'],
-  안전재난관제: ['안전재난관제', '안전', '재난', '기상', '관제'],
-  시설환경개선: ['시설환경개선', '시설', '환경', '리모델링', '실내'],
-};
+export function isCasePurpose(value: unknown): value is CasePurpose {
+  return CASE_PURPOSES.some((purpose) => purpose === value);
+}
 
 export function matchesCasePurpose(value: string, purpose: CasePurpose) {
-  return legacyPurposeTerms[purpose].some((term) => value.includes(term));
+  return value.trim() === purpose;
+}
+
+export function selectCaseExportItems<
+  T extends { type: string; published: boolean; data: { purpose?: unknown } },
+>(items: T[], purpose: CasePurpose, includeDrafts = false): T[] {
+  return items.filter(
+    (item) =>
+      item.type === 'case' &&
+      (includeDrafts || item.published) &&
+      typeof item.data.purpose === 'string' &&
+      matchesCasePurpose(item.data.purpose, purpose),
+  );
 }
 
 export function formatCaseDisplaySize(
