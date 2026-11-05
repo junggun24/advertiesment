@@ -116,7 +116,7 @@ export default async function RootLayout({
     <html lang="ko">
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="shortcut icon" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
         {/* Ownership checks require these tags in the initial head, before streamed metadata. */}
         {verification.google && (
           <meta name="google-site-verification" content={verification.google} />

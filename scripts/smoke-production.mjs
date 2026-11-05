@@ -71,6 +71,20 @@ results.health = await check('/api/health', async (response) => {
   }
 });
 results.robots = await check('/robots.txt');
+results.favicon = await check('/favicon.ico', async (response) => {
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  if (
+    !response.headers.get('content-type')?.startsWith('image/') ||
+    bytes.length < 6 ||
+    bytes[0] !== 0 ||
+    bytes[1] !== 0 ||
+    bytes[2] !== 1 ||
+    bytes[3] !== 0 ||
+    bytes[4] !== 3 ||
+    bytes[5] !== 0
+  )
+    throw new Error('favicon.ico가 유효한 3개 크기의 아이콘이 아닙니다.');
+});
 results.sitemap = await check('/sitemap.xml', async (response) => {
   const xml = await response.text();
   if (!xml.includes('https://dsko.co.kr/') || xml.includes('workers.dev')) {
