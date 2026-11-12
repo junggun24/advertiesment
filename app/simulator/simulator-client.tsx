@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Calculator, CheckCircle2, Info, RotateCcw } from 'lucide-react';
 import type { DisplayModel } from '@/lib/display-models';
 import { PUBLIC_PRICE_NOTICE } from '@/lib/catalog';
+import { simulatorProductSchema } from '@/lib/simulator-product-schema';
 
 const money = (value: number) =>
   new Intl.NumberFormat('ko-KR').format(Math.round(value));
@@ -411,20 +412,7 @@ export function SimulatorClient({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Product',
-            name: model.model_name,
-            model: model.model_name,
-            sku: model.procurement_id,
-            category: model.category_label,
-            offers: {
-              '@type': 'Offer',
-              priceCurrency: 'KRW',
-              price: model.registered_price,
-              availability: 'https://schema.org/InStock',
-            },
-          }),
+          __html: JSON.stringify(simulatorProductSchema(model)),
         }}
       />
     </main>
