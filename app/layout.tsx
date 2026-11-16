@@ -18,7 +18,7 @@ import {
 import { AttributionTracker } from '@/components/attribution-tracker';
 import { getSiteSettings } from '@/lib/site-settings-data';
 import { searchVerificationMetadata } from '@/lib/search-verification';
-import { getRepresentativeCaseImage } from '@/lib/representative-case-image';
+import { HOME_SEARCH_IMAGE } from '@/lib/search-assets';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [saved] = await getContentItems<SeoSettings>('seo');
@@ -26,10 +26,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const customImage = customSeoShareImage(seo.ogImage);
   const image = customImage
     ? { url: customImage, alt: seo.ogTitle }
-    : ((await getRepresentativeCaseImage()) ?? {
-        url: '/oic/case-1.jpg',
-        alt: '오아이씨코리아 디스플레이 설치 현장',
-      });
+    : {
+        url: HOME_SEARCH_IMAGE.path,
+        alt: HOME_SEARCH_IMAGE.alt,
+        width: HOME_SEARCH_IMAGE.width,
+        height: HOME_SEARCH_IMAGE.height,
+        type: HOME_SEARCH_IMAGE.type,
+      };
   return {
     metadataBase: new URL(seo.siteUrl),
     title: { default: seo.title, template: seo.titleTemplate },

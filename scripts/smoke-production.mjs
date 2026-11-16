@@ -58,12 +58,32 @@ results.home = await check('/', async (response) => {
   assertCanonicalInHead(html, '/');
   const head = html.split(/<\/head>/i)[0];
   if (
+    !head.includes(
+      'content="https://dsko.co.kr/search-assets/home-installation.jpg"',
+    ) ||
+    !head.includes('property="og:image:width" content="1193"') ||
+    !head.includes('property="og:image:height" content="671"') ||
+    !head.includes('property="og:image:type" content="image/jpeg"')
+  )
+    throw new Error('검색용 대표 이미지 메타데이터가 올바르지 않습니다.');
+  if (
     !/<meta\b[^>]*name="google-site-verification"[^>]*content="[^"]+"/i.test(
       head,
     )
   )
     throw new Error('Google 소유권 인증 태그가 홈페이지 head에 없습니다.');
 });
+results.searchImage = await check(
+  '/search-assets/home-installation.jpg',
+  async (response) => {
+    const bytes = await response.arrayBuffer();
+    if (
+      response.headers.get('content-type') !== 'image/jpeg' ||
+      bytes.byteLength < 5_000
+    )
+      throw new Error('검색용 대표 이미지 응답이 올바르지 않습니다.');
+  },
+);
 results.health = await check('/api/health', async (response) => {
   const data = await response.json();
   if (data.status !== 'ok' || !data.checks?.database || !data.checks?.storage) {
